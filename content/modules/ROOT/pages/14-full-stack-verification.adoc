@@ -58,7 +58,7 @@ All should show `ACCEPTED: True` and `ENFORCED: True`.
 ----
 API_KEY=$(oc get secret {user_name}-neuralbank-backend-apikey \
   -n {user_name}-neuralbank \
-  -o jsonpath='\{.data.api_key}' | base64 -d)
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
 # Should return 200 with customer data
 curl -s -w "\nHTTP: %\{http_code}\n" \
@@ -98,7 +98,7 @@ curl -s -w "\nHTTP: %\{http_code}\n" \
 [source,bash,subs="attributes+"]
 ----
 NFL_KEY=$(oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
-  -o jsonpath='\{.data.api_key}' | base64 -d)
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
 # Should return 200
 curl -s -w "\nHTTP: %\{http_code}\n" \

@@ -121,7 +121,7 @@ HTTP Status: 401
 [source,bash,subs="attributes+"]
 ----
 API_KEY=$(oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
-  -o jsonpath='\{.data.api_key}' | base64 -d)
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
 curl -s -H "X-API-Key: $API_KEY" \
   "https://nfl-wallet.{cluster_domain}/api/v1/customers" \

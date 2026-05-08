@@ -97,7 +97,7 @@ This avoids TLS certificate issues with self-signed cluster certificates.
 ----
 API_KEY=$(oc get secret {user_name}-neuralbank-backend-apikey \
   -n {user_name}-neuralbank \
-  -o jsonpath='\{.data.api_key}' | base64 -d)
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
 curl -s -H "X-API-Key: $API_KEY" \
   "https://neuralbank-backend-{user_name}-neuralbank.{cluster_domain}/api/hello-workshop"

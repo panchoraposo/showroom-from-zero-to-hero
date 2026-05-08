@@ -125,9 +125,10 @@ https://neuralbank-frontend-{user_name}-neuralbank.{cluster_domain}
 [source,bash,subs="attributes+"]
 ----
 # Retrieve the API Key for the frontend
+APP_NAME="${APP_NAME:-neuralbank-backend}"
 oc get secret -n {user_name}-neuralbank \
-  -l "app=neuralbank-backend,kuadrant.io/apikey=true" \
-  -o jsonpath='\{.items[0].data.api_key}' | base64 -d ; echo
+  -l "app=${APP_NAME},kuadrant.io/apikey=true" \
+  -o jsonpath='{.items[0].data.api_key}' | tr -d '\n' | base64 -d ; echo
 ----
 
 == Scaffolded vs Pre-deployed: Authentication Comparison
