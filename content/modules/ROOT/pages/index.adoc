@@ -2,8 +2,8 @@
 
 ++++
 <div style="text-align:center;margin:16px 0 8px;">
-  <img src="_images/Logo-OSC_with_padding.png" alt="OpenShift Commons Gathering" style="height:64px;">
-  <p style="margin:6px 0 0;color:#6a6e73;font-size:0.9rem;">OpenShift Commons Gathering — Buenos Aires 2026</p>
+  <img src="_images/Logo-OSC_with_padding.png" alt="Red Hat Tech Day" style="height:64px;">
+  <p style="margin:6px 0 0;color:#6a6e73;font-size:0.9rem;">Red Hat Tech Day - Santiago 2026</p>
 </div>
 ++++
 

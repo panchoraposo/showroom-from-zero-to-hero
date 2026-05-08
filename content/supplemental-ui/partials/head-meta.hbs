@@ -301,9 +301,9 @@ document.addEventListener('DOMContentLoaded', function() {
     var logoSrc = document.querySelector('link[rel=icon]')?.href?.replace('/img/favicon.ico','/img/Logo-OSC_with_padding.png') || '';
     var btn = document.createElement('div');
     btn.className = 'viz3d-btn';
-    btn.title = 'OpenShift Commons Gathering — Buenos Aires 2026\nClick logo to view 3D architecture\nClick text to visit commons.openshift.org';
+    btn.title = 'Red Hat Tech Day - Santiago 2026\nClick logo to view 3D architecture';
     btn.innerHTML = '<img src="'+logoSrc+'" alt="OpenShift Commons" style="cursor:pointer" onclick="openViz3D()">'+
-      '<a href="https://commons.openshift.org/" target="_blank" rel="noopener" style="color:#333;text-decoration:none;font-weight:500;line-height:1.2;">OpenShift Commons<br>Buenos Aires 2026</a>';
+      '<a href="https://www.redhat.com/" target="_blank" rel="noopener" style="color:#333;text-decoration:none;font-weight:500;line-height:1.2;">Red Hat Tech Day<br>Santiago 2026</a>';
     document.body.appendChild(btn);
   });
 })();
