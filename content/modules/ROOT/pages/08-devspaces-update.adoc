@@ -95,9 +95,38 @@ This avoids TLS certificate issues with self-signed cluster certificates.
 [.console-input]
 [source,bash,subs="attributes+"]
 ----
-API_KEY=$(oc get secret {user_name}-neuralbank-backend-apikey \
-  -n {user_name}-neuralbank \
-  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
+export APP_NAME="${APP_NAME:-neuralbank-backend}"
+export NS="{user_name}-neuralbank"
+export UNIQUE_NAME="{user_name}-${APP_NAME}"
+
+# Ensure an APIKey exists (this generates Secret ${APP_NAME}-apikey)
+if ! oc get apikey -n "$NS" "$UNIQUE_NAME" >/dev/null 2>&1; then
+  cat <<EOF | oc apply -f -
+apiVersion: devportal.kuadrant.io/v1alpha1
+kind: APIKey
+metadata:
+  name: ${UNIQUE_NAME}
+  namespace: ${NS}
+  labels:
+    app: ${APP_NAME}
+    kuadrant.io/apikey: "true"
+spec:
+  apiProductRef:
+    name: ${UNIQUE_NAME}-api
+  planTier: basic
+  requestedBy:
+    email: {user_name}@redhat.local
+    userId: {user_name}
+  useCase: workshop
+EOF
+fi
+
+until oc get secret -n "$NS" "${APP_NAME}-apikey" >/dev/null 2>&1; do
+  echo "Waiting for Secret ${APP_NAME}-apikey ..."
+  sleep 2
+done
+
+API_KEY=$(oc get secret -n "$NS" "${APP_NAME}-apikey" -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
 curl -s -H "X-API-Key: $API_KEY" \
   "https://neuralbank-backend-{user_name}-neuralbank.{cluster_domain}/api/hello-workshop"
