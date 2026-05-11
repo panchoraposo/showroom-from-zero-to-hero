@@ -308,3 +308,63 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 })();
 </script>
+
+<script>
+(function () {
+  function withCurrentSearch(href) {
+    if (!href) return href;
+    var s = window.location.search || '';
+    if (!s) return href;
+    return href + (href.indexOf('?') === -1 ? s : '&' + s.replace(/^\?/, ''));
+  }
+
+  function buildPrevNext() {
+    var current = document.querySelector('.nav-item.is-current-page > a.nav-link');
+    if (!current) return;
+
+    var links = Array.prototype.slice.call(document.querySelectorAll('.nav-menu a.nav-link'));
+    if (!links.length) return;
+
+    var href = current.getAttribute('href');
+    var idx = -1;
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].getAttribute('href') === href) { idx = i; break; }
+    }
+    if (idx < 0) return;
+
+    var prev = links[idx - 1] || null;
+    var next = links[idx + 1] || null;
+    if (!prev && !next) return;
+
+    var doc = document.querySelector('article.doc');
+    if (!doc) return;
+
+    var existing = document.getElementById('doc-prev-next');
+    if (existing) existing.remove();
+
+    var wrap = document.createElement('div');
+    wrap.id = 'doc-prev-next';
+    wrap.className = 'doc-prev-next';
+
+    function card(kind, a) {
+      if (!a) return '<div class="doc-prev-next-spacer"></div>';
+      var title = (a.textContent || '').trim();
+      var url = withCurrentSearch(a.getAttribute('href'));
+      var label = kind === 'prev' ? 'Previous' : 'Next';
+      var arrow = kind === 'prev' ? '←' : '→';
+      return (
+        '<a class="doc-prev-next-card doc-prev-next-' + kind + '" href="' + url + '">' +
+          '<div class="doc-prev-next-label">' + arrow + ' ' + label + '</div>' +
+          '<div class="doc-prev-next-title">' + title + '</div>' +
+        '</a>'
+      );
+    }
+
+    wrap.innerHTML = card('prev', prev) + card('next', next);
+    doc.appendChild(wrap);
+  }
+
+  document.addEventListener('DOMContentLoaded', buildPrevNext);
+  window.addEventListener('hashchange', buildPrevNext);
+})();
+</script>

@@ -102,3 +102,51 @@ video {
     outline: none;
     border-color: #0066cc;
 }
+
+/* Prev/Next navigation at bottom of docs */
+.doc-prev-next {
+    display: flex;
+    gap: 16px;
+    margin: 28px 0 8px;
+    padding-top: 16px;
+    border-top: 1px solid #d2d2d2;
+}
+.doc-prev-next-card,
+.doc-prev-next-spacer {
+    flex: 1 1 0;
+}
+.doc-prev-next-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 14px;
+    border: 1px solid #d2d2d2;
+    border-radius: 12px;
+    background: #fff;
+    text-decoration: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+    min-height: 64px;
+}
+.doc-prev-next-card:hover {
+    border-color: #0066cc;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+.doc-prev-next-label {
+    font-size: 12px;
+    color: #6a6e73;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.doc-prev-next-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #151515;
+    line-height: 1.25;
+}
+.doc-prev-next-next {
+    text-align: right;
+}
+.doc-prev-next-next .doc-prev-next-label {
+    justify-content: flex-end;
+}
