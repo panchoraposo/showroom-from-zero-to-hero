@@ -136,10 +136,10 @@ The backend exposes REST endpoints through the Kuadrant gateway. Use an API Key 
 [source,bash,subs="attributes+"]
 ----
 # Get the API key from the generated Secret
-APP_NAME="${APP_NAME:-neuralbank-backend}"
+export APP_NAME="${APP_NAME:-neuralbank-backend}"
 API_KEY=$(oc get secret -n {user_name}-neuralbank \
-  -l "app=${APP_NAME},kuadrant.io/apikey=true" \
-  -o jsonpath='{.items[0].data.api_key}' | tr -d '\n' | base64 -d)
+  "${APP_NAME}-apikey" \
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
 echo "API Key: $API_KEY"
 
