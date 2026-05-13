@@ -147,12 +147,12 @@ echo "API Key: $API_KEY"
 # List customers
 curl -s -H "X-API-Key: $API_KEY" \
   "https://${APP_NAME}-{user_name}-neuralbank.{cluster_domain}/api/customers" \
-  | python3 -m json.tool
+  | jq .
 
 # List credits
 curl -s -H "X-API-Key: $API_KEY" \
   "https://${APP_NAME}-{user_name}-neuralbank.{cluster_domain}/api/credits" \
-  | python3 -m json.tool
+  | jq .
 ----
 
 == Step 8: Confirm Catalog Registration

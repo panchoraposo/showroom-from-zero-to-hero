@@ -96,8 +96,12 @@ API Keys are stored as Kubernetes Secrets with labels that Kuadrant/Authorino de
 ----
 oc get secrets -n nfl-wallet-prod -l kuadrant.io/apikey=true
 
-# Decode the admin key
+# Decode the admin key (can do POST/PUT/DELETE)
 oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
+  -o jsonpath='{.data.api_key}' | base64 -d ; echo
+
+# Decode the readonly key (GET only)
+oc get secret nfl-wallet-apikey-readonly -n nfl-wallet-prod \
   -o jsonpath='{.data.api_key}' | base64 -d ; echo
 ----
 
@@ -120,12 +124,12 @@ HTTP Status: 401
 [.console-input]
 [source,bash,subs="attributes+"]
 ----
-API_KEY=$(oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
+ADMIN_KEY=$(oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
   -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
-curl -s -H "X-API-Key: $API_KEY" \
+curl -s -H "X-API-Key: $ADMIN_KEY" \
   "https://nfl-wallet.{cluster_domain}/api/v1/customers" \
-  | python3 -m json.tool | head -20
+  | jq . | head -20
 ----
 
 == Test: Create a Customer (POST)
@@ -133,37 +137,52 @@ curl -s -H "X-API-Key: $API_KEY" \
 [.console-input]
 [source,bash,subs="attributes+"]
 ----
+USER_NAME="{user_name}"
+N=${USER_NAME#user}
+printf -v LAST4 "%04d" "$N"
+SSN="999-88-$LAST4"
+EMAIL="apikey.${USER_NAME}@wallet.io"
+
 curl -s -X POST \
-  -H "X-API-Key: $API_KEY" \
+  -H "X-API-Key: $ADMIN_KEY" \
   -H "Content-Type: application/json" \
   -d '{
+    "identificacion": "'"$SSN"'",
+    "tipoIdentificacion": "SSN",
     "nombre": "API Key",
     "apellido": "Test",
-    "email": "apikey.test@wallet.io",
-    "tipoCliente": "EMPRESA",
+    "email": "'"$EMAIL"'",
+    "telefono": "+1-305-555-0102",
+    "direccion": "123 Ocean Dr",
     "ciudad": "Miami",
-    "pais": "USA"
+    "estadoProvincia": "FL",
+    "codigoPostal": "33139",
+    "paisId": 1,
+    "tipoCliente": "PERSONAL"
   }' \
   "https://nfl-wallet.{cluster_domain}/api/v1/customers" \
-  | python3 -m json.tool
+  | jq .
 ----
 
 == Quick Rate-Limit Test
 
-The RateLimitPolicy allows **120 requests per minute**:
+This API also has rate limiting enabled (via Kuadrant PlanPolicy). The **readonly** key is on the **free** plan (**10 requests per minute**) so you can trigger `429` quickly:
 
 [.console-input]
 [source,bash,subs="attributes+"]
 ----
-for i in $(seq 1 10); do
+READONLY_KEY=$(oc get secret nfl-wallet-apikey-readonly -n nfl-wallet-prod \
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
+
+for i in $(seq 1 12); do
   code=$(curl -s -o /dev/null -w '%\{http_code}' \
-    -H "X-API-Key: $API_KEY" \
+    -H "X-API-Key: $READONLY_KEY" \
     "https://nfl-wallet.{cluster_domain}/api/v1/customers")
   echo "Request $i: HTTP $code"
 done
 ----
 
-All 10 should return `200`. Beyond 120 requests per minute, you will see `429 Too Many Requests`.
+The first 10 should return `200`. Requests 11+ should return `429 Too Many Requests`. If you don’t see `429`, wait 60 seconds and retry.
 
 == How API Key Auth Works
 

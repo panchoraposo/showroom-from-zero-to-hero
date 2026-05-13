@@ -86,7 +86,7 @@ TOKEN=$(curl -s -X POST \
   -d "client_id=neuralbank-frontend" \
   -d "username={user_name}" \
   -d "password=Welcome123!" \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['access_token'])")
+  | jq -r '.access_token')
 
 # Should return 200
 curl -s -w "\nHTTP: %\{http_code}\n" \

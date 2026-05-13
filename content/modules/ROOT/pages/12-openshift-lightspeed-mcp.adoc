@@ -269,7 +269,7 @@ The workshop also deploys a **Customer Service MCP** as part of the Neuralbank s
 # Check MCP server tools endpoint
 curl -s -H "X-API-Key: $API_KEY" \
   "https://{user_name}-customer-service-mcp.{cluster_domain}/tools" \
-  | python3 -m json.tool
+  | jq .
 ----
 
 == Summary

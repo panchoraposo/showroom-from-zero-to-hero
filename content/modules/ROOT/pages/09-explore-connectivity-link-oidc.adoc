@@ -160,7 +160,7 @@ TOKEN=$(curl -s -X POST \
   -d "client_id=neuralbank-frontend" \
   -d "username={user_name}" \
   -d "password=Welcome123!" \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['access_token'])")
+  | jq -r '.access_token')
 
 echo "Token obtained (first 50 chars): ${TOKEN:0:50}..."
 ----
@@ -172,7 +172,7 @@ echo "Token obtained (first 50 chars): ${TOKEN:0:50}..."
 ----
 curl -s -H "Authorization: Bearer $TOKEN" \
   "https://neuralbank.{cluster_domain}/api/v1/customers" \
-  | python3 -m json.tool | head -30
+  | jq . | head -30
 ----
 
 == Test: Create a New Customer (POST)
@@ -192,7 +192,7 @@ curl -s -X POST \
     "pais": "Argentina"
   }' \
   "https://neuralbank.{cluster_domain}/api/v1/customers" \
-  | python3 -m json.tool
+  | jq .
 ----
 
 == Summary
