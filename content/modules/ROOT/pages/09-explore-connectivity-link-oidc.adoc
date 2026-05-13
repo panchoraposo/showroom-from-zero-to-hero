@@ -201,7 +201,7 @@ The pre-deployed `neuralbank-stack` demonstrates a **real interactive OIDC flow*
 
 * Users access the frontend at `https://neuralbank.{cluster_domain}`
 * The `OIDCPolicy` CR redirects to Keycloak for authentication
-* Credentials: `{user_name}` / `Welcome123!` (same as Developer Hub)
+* Credentials: `{user_name}` / `Welcome123!`
 * After login, the JWT is stored in a cookie for subsequent requests
 
 This differs from the scaffolded apps (which use API Key authentication) because the pre-deployed stack includes a fully configured Keycloak OIDC client (`neuralbank-frontend`) in the `neuralbank` realm.
