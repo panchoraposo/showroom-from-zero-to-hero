@@ -172,7 +172,7 @@ echo "Token obtained (first 50 chars): ${TOKEN:0:50}..."
 ----
 curl -s -H "Authorization: Bearer $TOKEN" \
   "https://neuralbank.{cluster_domain}/api/v1/customers" \
-  | jq . | head -30
+  | jq '.content[:3]'
 ----
 
 == Test: Create a New Customer (POST)

@@ -129,7 +129,7 @@ ADMIN_KEY=$(oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
 
 curl -s -H "X-API-Key: $ADMIN_KEY" \
   "https://nfl-wallet.{cluster_domain}/api/v1/customers" \
-  | jq . | head -20
+  | jq '.content[:1]'
 ----
 
 == Test: Create a Customer (POST)
