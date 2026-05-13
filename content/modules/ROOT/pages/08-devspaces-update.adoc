@@ -43,7 +43,7 @@ commands:
 
 == Make a Code Change
 
-In the IDE file explorer, find a REST resource class (e.g., `CustomerResource.java`).
+In the IDE file explorer, find a REST resource class (e.g., `CreditResource.java`).
 
 Make a small, safe change:
 
@@ -52,14 +52,35 @@ Make a small, safe change:
 
 WARNING: Avoid changing artifact names, Dockerfile, or pipeline paths unless the workshop instructs it.
 
+Add the following endpoint inside your resource class:
+
+[source,java]
+----
+@GET
+@Path("/hello-workshop")
+@Produces(MediaType.TEXT_PLAIN)
+public String helloWorkshop() {
+    return "hello-workshop: backend is running";
+}
+----
+
+If your IDE shows missing imports, add:
+
+[source,java]
+----
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+----
+
 == Build Locally in the Workspace
 
-[.console-input]
-[source,bash]
-----
-cd /projects/neuralbank-backend
-mvn -q package -DskipTests
-----
+The project already defines `build` and `run` commands in the `devfile.yaml`, so you can execute them directly from the IDE.
+
+. In Dev Spaces, open the command palette and run `Tasks: Run Task` (or `Devfile: Execute Command`)
+. Select `build` to compile/package the app
+. Select `run` to start the app
 
 Fix compile errors before continuing; the remote pipeline will fail the same way.
 
