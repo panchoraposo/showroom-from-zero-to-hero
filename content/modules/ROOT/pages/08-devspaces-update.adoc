@@ -29,17 +29,55 @@ components:
       memoryLimit: 3Gi
       mountSources: true
 commands:
-  - id: build
+  - id: 01-init-maven
     exec:
       component: tools
-      commandLine: mvn -q package -DskipTests
+      commandLine: <...>
       workingDir: ${PROJECT_SOURCE}
-  - id: run
+  - id: 02-build
     exec:
       component: tools
-      commandLine: mvn quarkus:dev
+      commandLine: <...>
+      workingDir: ${PROJECT_SOURCE}
+  - id: 03-run
+    exec:
+      component: tools
+      commandLine: <...>
       workingDir: ${PROJECT_SOURCE}
 ----
+
+== Dependency Analytics (RHDA) in Dev Spaces
+
+This workshop environment recommends and auto-installs the *Red Hat Dependency Analytics* extension (publisher `redhat`, extension `fabric8-analytics`).
+
+Use it to scan your dependencies and open an HTML vulnerability report.
+
+. In the IDE, open `pom.xml`
+. Click the *pie chart* icon in the editor title bar, or right click `pom.xml` and choose *Red Hat Dependency Analytics Report...*
+. Wait for the *Red Hat Dependency Analytics Report* tab to open and review:
+* Vulnerabilities (CVEs) and severities
+* Recommended versions / remediation suggestions
+
+NOTE: By default, RHDA writes the report to `/tmp/redhatDependencyAnalyticsReport.html` (while the report tab is open).
+
+== Build Locally in the Workspace
+
+The project defines commands in the `devfile.yaml`, so you can execute them directly from the IDE.
+
+. In Dev Spaces, open the command palette and run `Tasks: Run Task` (or `Devfile: Execute Command`)
+. Run `01-init-maven` (one time)
+. Run `02-build`
+. Run `03-run`
+
+If you want to quickly locate the RHDA report file from a terminal task, run `04-open-rhda-report`.
+
+== Update Quarkus to the Latest Version and Re-run RHDA
+
+Quarkus moves fast. For this workshop, update Quarkus to the latest stable version and then re-run the RHDA report to compare results.
+
+. In Dev Spaces, run the devfile command `05-update-quarkus-to-3.35.2`
+. Open `pom.xml` again and re-run *Red Hat Dependency Analytics Report...*
+. Compare the report before/after the update (vulnerabilities and recommendations may change)
 
 == Make a Code Change
 
@@ -73,14 +111,6 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 ----
-
-== Build Locally in the Workspace
-
-The project already defines `build` and `run` commands in the `devfile.yaml`, so you can execute them directly from the IDE.
-
-. In Dev Spaces, open the command palette and run `Tasks: Run Task` (or `Devfile: Execute Command`)
-. Select `build` to compile/package the app
-. Select `run` to start the app
 
 Fix compile errors before continuing; the remote pipeline will fail the same way.
 
