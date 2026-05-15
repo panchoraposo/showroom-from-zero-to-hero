@@ -89,6 +89,11 @@ For services exposed with the connectivity link pattern, inspect:
 [source,bash,subs="attributes+"]
 ----
 oc get authpolicy -n {user_name}-neuralbank -o yaml
+----
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
 oc get ratelimitpolicy -n {user_name}-neuralbank -o yaml
 ----
 
