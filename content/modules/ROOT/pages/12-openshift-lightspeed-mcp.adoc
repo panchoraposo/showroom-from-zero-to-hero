@@ -44,6 +44,21 @@ graph TB
     RHDH --> DEVHUB[Developer Hub]
 ....
 
+== Installation (Workshop GitOps)
+
+The workshop installs the **MCP Gateway configuration** via GitOps (Gateway API `Gateway` + `MCPGatewayExtension` + server registrations/routes).
+
+If you are deploying on a **clean cluster** and want GitOps to also install the **MCP Gateway Operator** (OLM / OperatorHub), enable:
+
+[source,yaml]
+----
+connectivityLink:
+  mcpGateway:
+    operatorInstallEnabled: true
+----
+
+If your cluster already has **Kuadrant/Authorino** running and managing `AuthConfig` resources, keep it disabled to avoid OLM dependency conflicts.
+
 == MCP Tools Reference — 55 Tools
 
 The MCP Gateway federates **55 tools** from 4 backend MCP servers, plus 7 from Developer Hub accessed directly. Each tool is callable by the LLM through natural language prompts.
