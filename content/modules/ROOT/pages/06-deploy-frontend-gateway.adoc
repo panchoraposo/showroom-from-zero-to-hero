@@ -113,6 +113,8 @@ oc get ratelimitpolicy -n {user_name}-neuralbank -o wide
 
 Open the frontend Route in the browser:
 
+[.console-input]
+[source,text,subs="attributes+"]
 ----
 https://neuralbank-frontend-{user_name}-neuralbank.{cluster_domain}
 ----
@@ -120,6 +122,8 @@ https://neuralbank-frontend-{user_name}-neuralbank.{cluster_domain}
 . Enter an **API Key** in the input field (retrieve it from the backend's API Key Secret).
 . The SPA shows gateway connectivity status, customer data, and MCP server health.
 . You can view customers, update credits, and check MCP tools — all routed through the Kuadrant gateways.
+
+NOTE: If the **MCP** indicator stays red or the **Health Check** shows a DNS/proxy error, the `customer-service-mcp` app is not deployed yet (or is still building). Go back to Step 2 and confirm ArgoCD has an Application named `{{user_name}}-customer-service-mcp` in namespace `{user_name}-neuralbank` and that it is **Synced/Healthy**.
 
 [.console-input]
 [source,bash,subs="attributes+"]
