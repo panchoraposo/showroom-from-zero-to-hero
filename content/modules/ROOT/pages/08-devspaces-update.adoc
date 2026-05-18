@@ -48,7 +48,7 @@ commands:
 
 == Dependency Analytics (RHDA) in Dev Spaces
 
-This workshop environment recommends and auto-installs the *Red Hat Dependency Analytics* extension (publisher `redhat`, extension `fabric8-analytics`).
+This workshop environment automatically installs the *Red Hat Dependency Analytics* extension (publisher `redhat`, extension `fabric8-analytics`) on workspace startup.
 
 Use it to scan your dependencies and open an HTML vulnerability report.
 
