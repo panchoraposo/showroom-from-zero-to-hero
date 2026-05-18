@@ -53,7 +53,7 @@ This workshop environment recommends and auto-installs the *Red Hat Dependency A
 Use it to scan your dependencies and open an HTML vulnerability report.
 
 . In the IDE, open `pom.xml`
-. Click the *pie chart* icon in the editor title bar, or right click `pom.xml` and choose *Red Hat Dependency Analytics Report...*
+. Open the command palette and run *Red Hat Dependency Analytics Report...* (or right click `pom.xml` and choose *Red Hat Dependency Analytics Report...*)
 . Wait for the *Red Hat Dependency Analytics Report* tab to open and review:
 * Vulnerabilities (CVEs) and severities
 * Recommended versions / remediation suggestions
