@@ -60,6 +60,30 @@ Use it to scan your dependencies and open an HTML vulnerability report.
 
 NOTE: By default, RHDA writes the report to `/tmp/redhatDependencyAnalyticsReport.html` (while the report tab is open).
 
+== What could happen if you don't update (example: `io.quarkus:quarkus-rest`)
+
+When you start with the older Quarkus version (as intended for this workshop), RHDA may report *High severity* vulnerabilities for dependencies such as `io.quarkus:quarkus-rest` (and transitive libraries it brings in, like Netty).
+
+If you keep shipping an application with these vulnerabilities, depending on your exact endpoints, proxies, and deployment topology, it may increase risk of issues like:
+
+* *Authorization bypass / access control inconsistencies* (for example, path normalization edge cases)
+* *HTTP request smuggling* (can lead to request confusion through intermediaries, cache poisoning, or bypassing security controls)
+* *Denial of service (resource exhaustion)* due to crafted inputs (e.g., decompression or parser edge cases)
+
+The goal in this module is to *see the CVEs in the report*, understand the dependency chain, and then update Quarkus to reduce/avoid those findings.
+
+=== Verify the CVEs in the RHDA report
+
+. Generate/open the report as described above (RHDA report tab).
+. In the report, use your browser search (Ctrl/Cmd+F) to find `quarkus-rest`.
+. In the vulnerabilities list for that dependency, locate one of the CVEs from the report (examples you may see in this workshop environment):
+* `CVE-2026-39852` (Quarkus authorization bypass via semicolon path normalization inconsistency)
+* `CVE-2026-33870` (Netty: HTTP Request Smuggling via Chunked Extension Quoted-String Parsing)
+. Click/expand the vulnerability entry and review:
+* *Severity* and *CVSS score*
+* *Transitive dependency* that introduces it
+* *Remediation* (recommended fixed version or upgrade guidance)
+
 == Build Locally in the Workspace
 
 The project defines commands in the `devfile.yaml`, so you can execute them directly from the IDE.
