@@ -52,6 +52,8 @@ This workshop environment automatically installs the *Red Hat Dependency Analyti
 
 Use it to scan your dependencies and open an HTML vulnerability report.
 
+TIP: This workshop also deploys a shared Maven mirror cache inside the cluster. It speeds up dependency downloads when many users run builds in parallel.
+
 . In the IDE, open `pom.xml`
 . Open the command palette and run *Red Hat Dependency Analytics Report...* (or right click `pom.xml` and choose *Red Hat Dependency Analytics Report...*)
 . Wait for the *Red Hat Dependency Analytics Report* tab to open and review:
