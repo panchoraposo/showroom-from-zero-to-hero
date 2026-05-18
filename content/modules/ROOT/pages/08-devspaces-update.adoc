@@ -73,11 +73,13 @@ If you want to quickly locate the RHDA report file from a terminal task, run `04
 
 == Update Quarkus to the Latest Version and Re-run RHDA
 
-Quarkus moves fast. For this workshop, update Quarkus to the latest stable version and then re-run the RHDA report to compare results.
+For this workshop, start with an older Quarkus (more likely to surface issues in RHDA), then update Quarkus to the latest Red Hat GA build and re-run the RHDA report to compare results.
 
-. In Dev Spaces, run the devfile command `05-update-quarkus-to-3.35.2`
+. In Dev Spaces, run the devfile command `05-update-quarkus-to-3.27.3.redhat-00002`
 . Open `pom.xml` again and re-run *Red Hat Dependency Analytics Report...*
 . Compare the report before/after the update (vulnerabilities and recommendations may change)
+
+After the update, you can run `06-run-dev-ui-and-swagger` to start dev mode with Dev UI + Swagger UI enabled for Dev Spaces.
 
 == Make a Code Change
 
