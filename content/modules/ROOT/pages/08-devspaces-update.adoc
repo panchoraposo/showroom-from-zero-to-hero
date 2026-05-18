@@ -88,12 +88,17 @@ The goal in this module is to *see the CVEs in the report*, understand the depen
 
 The project defines commands in the `devfile.yaml`, so you can execute them directly from the IDE.
 
-. In Dev Spaces, open the command palette and run `Tasks: Run Task` (or `Devfile: Execute Command`)
+. In Dev Spaces, open the command palette and run `Devfile: Execute Command`
+. Select and run commands in order:
 . Run `01-init-maven` (one time)
 . Run `02-build`
 . Run `03-run`
 
 If you want to quickly locate the RHDA report file from a terminal task, run `04-open-rhda-report`.
+
+NOTE: You may see both `devfile.yaml` and `devfile` in the repository. This is expected for compatibility with different Dev Spaces factory settings; the workspace will use one of them, but the commands are the same.
+
+TIP: Some IDEs show `Tasks: Run Task` only for VS Code tasks (`.vscode/tasks.json`). If `Tasks: Run Task` is empty or errors, use `Devfile: Execute Command`.
 
 == Update Quarkus to the Latest Version and Re-run RHDA
 
