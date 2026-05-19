@@ -113,11 +113,7 @@ oc get ratelimitpolicy -n {user_name}-neuralbank -o wide
 
 Open the frontend Route in the browser:
 
-[.console-input]
-[source,text,subs="attributes+"]
-----
-https://neuralbank-frontend-{user_name}-neuralbank.{cluster_domain}
-----
+link:https://neuralbank-frontend-{user_name}-neuralbank.{cluster_domain}[https://neuralbank-frontend-{user_name}-neuralbank.{cluster_domain}]
 
 . Enter an **API Key** in the input field (retrieve it from the backend's API Key Secret).
 . The SPA shows gateway connectivity status, customer data, and MCP server health.
