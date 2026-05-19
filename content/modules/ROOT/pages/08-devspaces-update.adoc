@@ -35,12 +35,12 @@ components:
           exposure: public
           protocol: http
 commands:
-  - id: 03-build
+  - id: 01-build
     exec:
       component: tools
       commandLine: <...>
       workingDir: ${PROJECT_SOURCE}
-  - id: 04-run
+  - id: 02-run
     exec:
       component: tools
       commandLine: <...>
@@ -57,8 +57,8 @@ In this section you will use Dev Spaces to inspect the devfile, scan dependencie
 * Workspace container resources (CPU/memory) under `components[].container`.
 * The **public endpoint** for Quarkus on port `8080` (`endpoints: - name: quarkus`).
 * The available commands (these show up as tasks) and what they do:
-** `03-build` runs `mvn package -DskipTests`
-** `04-run` runs `mvn quarkus:dev` for live reload
+** `01-build` runs `mvn package -DskipTests`
+** `02-run` runs `mvn quarkus:dev` for live reload
 . Also open `.mvn/maven.config` and `.mvn/settings.xml` to see how Maven is configured to use the in-cluster Nexus.
 
 == Dependency Analytics (RHDA) in Dev Spaces
@@ -83,12 +83,12 @@ The project exposes build and run as **tasks from the devfile**.
 
 .3. Build the backend using the devfile task
 . Open the command palette and run `Tasks: Run Task`.
-. Select `devfile: 03-build`.
+. Select `devfile: 01-build`.
 . Wait for **BUILD SUCCESS**.
 
 .4. Run the backend using the devfile task
 . Open the command palette and run `Tasks: Run Task`.
-. Select `devfile: 04-run`.
+. Select `devfile: 02-run`.
 . Keep it running to enable live reload.
 
 .5. Open Quarkus Dev UI and Swagger UI
