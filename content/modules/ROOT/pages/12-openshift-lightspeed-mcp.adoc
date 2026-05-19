@@ -18,6 +18,20 @@
 . Click the **Lightspeed** icon in the console header (chat bubble icon).
 . Ask questions about your cluster, workloads, or Kubernetes concepts.
 
+== Workshop Prompt Walkthrough (using MCP tools)
+
+Run the following prompts in the Lightspeed chat. When Lightspeed asks to run a tool/action, approve it.
+
+. List pods in the pre-deployed stack:
+* `List all pods in the neuralbank-stack namespace`
+. List Argo CD Applications:
+* `List all ArgoCD applications`
+. Scale the frontend in your scaffolded namespace:
+* `Scale the frontend deployment to 2 replicas in the {user_name}-neuralbank namespace`
+. Deploy Redis in your scaffolded namespace (choose one):
+* `Deploy a Redis database in the {user_name}-neuralbank namespace`
+* `Install Redis using Helm in the {user_name}-neuralbank namespace`
+
 == Architecture: OLS + MCP Gateway
 
 [mermaid]
