@@ -1,4 +1,4 @@
-= Full Stack Verification
+= 12. Full Stack Verification
 
 This final module is a concise checklist to verify that all workshop components are functioning correctly.
 

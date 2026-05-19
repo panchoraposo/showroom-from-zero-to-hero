@@ -1,4 +1,4 @@
-= OpenShift Lightspeed & MCP Gateway
+= 10. OpenShift Lightspeed & MCP Gateway
 
 **OpenShift Lightspeed (OLS)** is an AI assistant integrated into the OpenShift web console. Combined with the **MCP Gateway** (a Kuadrant community extension), it can execute cluster operations through AI-callable tools.
 

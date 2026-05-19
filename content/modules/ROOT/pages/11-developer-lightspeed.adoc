@@ -1,4 +1,4 @@
-= Developer Lightspeed
+= 9. Developer Lightspeed
 
 **Developer Lightspeed** is an AI chat assistant integrated into Red Hat Developer Hub. It helps developers get answers about the platform, templates, and best practices without leaving the portal.
 

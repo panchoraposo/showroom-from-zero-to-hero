@@ -15,9 +15,9 @@
 * xref:08-devspaces-update.adoc[8. Update Code with DevSpaces]
 
 .AI-Assisted Development
-* xref:11-developer-lightspeed.adoc[11. Developer Lightspeed]
-* xref:12-openshift-lightspeed-mcp.adoc[12. OpenShift Lightspeed & MCP Gateway]
+* xref:11-developer-lightspeed.adoc[9. Developer Lightspeed]
+* xref:12-openshift-lightspeed-mcp.adoc[10. OpenShift Lightspeed & MCP Gateway]
 
 .Operations & Verification
-* xref:13-observability.adoc[13. Observability Stack]
-* xref:14-full-stack-verification.adoc[14. Full Stack Verification]
+* xref:13-observability.adoc[11. Observability Stack]
+* xref:14-full-stack-verification.adoc[12. Full Stack Verification]
