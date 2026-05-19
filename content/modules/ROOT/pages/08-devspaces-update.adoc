@@ -26,118 +26,102 @@ components:
   - name: tools
     container:
       image: registry.redhat.io/devspaces/udi-rhel9:latest
-      memoryLimit: 2Gi
+      memoryLimit: 4Gi
+      cpuLimit: "2"
       mountSources: true
+      endpoints:
+        - name: quarkus
+          targetPort: 8080
+          exposure: public
+          protocol: http
 commands:
-  - id: build
+  - id: 03-build
     exec:
       component: tools
       commandLine: <...>
       workingDir: ${PROJECT_SOURCE}
-  - id: run
+  - id: 04-run
     exec:
       component: tools
       commandLine: <...>
       workingDir: ${PROJECT_SOURCE}
 ----
+
+== Develop in Dev Spaces (tasks from the devfile)
+
+In this section you will use Dev Spaces to inspect the devfile, scan dependencies with RHDA, build and run the app, access Quarkus Dev UI + Swagger, make a small code change, and push it back to Git.
+
+.1. Review the `devfile.yaml`
+. Open `devfile.yaml` in the repository root.
+. Read it and identify the key pieces:
+* Workspace container resources (CPU/memory) under `components[].container`.
+* The **public endpoint** for Quarkus on port `8080` (`endpoints: - name: quarkus`).
+* The available commands (these show up as tasks) and what they do:
+** `03-build` runs `mvn package -DskipTests`
+** `04-run` runs `mvn quarkus:dev` for live reload
+. Also open `.mvn/maven.config` and `.mvn/settings.xml` to see how Maven is configured to use the in-cluster Nexus.
 
 == Dependency Analytics (RHDA) in Dev Spaces
 
-This workshop environment automatically installs the *Red Hat Dependency Analytics* extension (publisher `redhat`, extension `fabric8-analytics`) on workspace startup.
+This step uses the *Red Hat Dependency Analytics* (RHDA) extension to scan `pom.xml` and generate a dependency/vulnerability report.
 
-Use it to scan your dependencies and open an HTML vulnerability report.
-
-TIP: This workshop also deploys a shared Maven mirror cache inside the cluster. It speeds up dependency downloads when many users run builds in parallel.
-
-. In the IDE, open `pom.xml`
-. Open the command palette and run *Red Hat Dependency Analytics Report...* (or right click `pom.xml` and choose *Red Hat Dependency Analytics Report...*)
-. Wait for the *Red Hat Dependency Analytics Report* tab to open and review:
-* Vulnerabilities (CVEs) and severities
-* Recommended versions / remediation suggestions
-
-NOTE: By default, RHDA writes the report to `/tmp/redhatDependencyAnalyticsReport.html` (while the report tab is open).
-
-== What could happen if you don't update (example: `io.quarkus:quarkus-rest`)
-
-When you start with the older Quarkus version (as intended for this workshop), RHDA may report *High severity* vulnerabilities for dependencies such as `io.quarkus:quarkus-rest` (and transitive libraries it brings in, like Netty).
-
-If you keep shipping an application with these vulnerabilities, depending on your exact endpoints, proxies, and deployment topology, it may increase risk of issues like:
-
-* *Authorization bypass / access control inconsistencies* (for example, path normalization edge cases)
-* *HTTP request smuggling* (can lead to request confusion through intermediaries, cache poisoning, or bypassing security controls)
-* *Denial of service (resource exhaustion)* due to crafted inputs (e.g., decompression or parser edge cases)
-
-The goal in this module is to *see the CVEs in the report*, understand the dependency chain, and then update Quarkus to reduce/avoid those findings.
-
-=== Verify the CVEs in the RHDA report
-
-. Generate/open the report as described above (RHDA report tab).
-. In the report, use your browser search (Ctrl/Cmd+F) to find `quarkus-rest`.
-. In the vulnerabilities list for that dependency, locate one of the CVEs from the report (examples you may see in this workshop environment):
-* `CVE-2026-39852` (Quarkus authorization bypass via semicolon path normalization inconsistency)
-* `CVE-2026-33870` (Netty: HTTP Request Smuggling via Chunked Extension Quoted-String Parsing)
-. Click/expand the vulnerability entry and review:
-* *Severity* and *CVSS score*
-* *Transitive dependency* that introduces it
-* *Remediation* (recommended fixed version or upgrade guidance)
+.2. Activate RHDA and review `pom.xml`
+. Open `pom.xml`.
+. Ensure the *Red Hat Dependency Analytics* extension is enabled:
+* Open the *Extensions* view.
+* Search for `Dependency Analytics` (publisher `redhat`, extension `fabric8-analytics`) and enable/install it if needed.
+. Generate the report:
+* Right click `pom.xml` and run *Red Hat Dependency Analytics Report...* (or use the command palette).
+. Review the report and discuss a few findings:
+* *Why CVEs appear*: often due to **transitive** dependencies pulled in by a framework (Quarkus, Netty, Jackson, etc.).
+* *Severity vs exploitability*: explain that severity is a starting point; context matters (network exposure, reachable code paths, configuration).
+* *Remediation*: prefer upgrading the platform/BOM, then verify the dependency tree changed as expected.
 
 == Build Locally in the Workspace
 
-The project defines build/run commands in the `devfile.yaml`, so you can execute them directly from the IDE.
+The project exposes build and run as **tasks from the devfile**.
 
-. In Dev Spaces, open the command palette and run `Devfile: Execute Command`
-. Run `build`
-. Run `run`
+.3. Build the backend using the devfile task
+. Open the command palette and run `Tasks: Run Task`.
+. Select `devfile: 03-build`.
+. Wait for **BUILD SUCCESS**.
 
-TIP: Some IDEs show `Tasks: Run Task` only for VS Code tasks (`.vscode/tasks.json`). If `Tasks: Run Task` is empty or errors, use `Devfile: Execute Command`.
+.4. Run the backend using the devfile task
+. Open the command palette and run `Tasks: Run Task`.
+. Select `devfile: 04-run`.
+. Keep it running to enable live reload.
 
-== Update Quarkus to the Latest Version and Re-run RHDA
-
-For this workshop, start with an older Quarkus (more likely to surface issues in RHDA), then update Quarkus to the latest Red Hat GA build and re-run the RHDA report to compare results.
-
-. Update `pom.xml` to the target Quarkus version as instructed in the workshop
-. Run `mvn package -DskipTests` (or use the `build` command)
-. Open `pom.xml` again and re-run *Red Hat Dependency Analytics Report...*
-. Compare the report before/after the update (vulnerabilities and recommendations may change)
-
-After the update, start dev mode again (use the `run` command). The workshop will guide you on enabling Dev UI + Swagger UI options when needed.
+.5. Open Quarkus Dev UI and Swagger UI
+. Open the public endpoint created from the devfile:
+* In the IDE, open the *Ports/Endpoints* view (or use the command palette `Devfile: Open Endpoint`).
+* Open the `quarkus` endpoint (port `8080`).
+. Open Quarkus Dev UI at `/q/dev-ui/`.
+. From Dev UI, open **Swagger UI** (or go directly to `/q/swagger-ui/`).
 
 == Make a Code Change
 
-In the IDE file explorer, find a REST resource class (e.g., `CreditResource.java`).
-
-Make a small, safe change:
-
-* Add a `GET` endpoint that returns an identifiable message (`/api/hello-workshop`)
-* Or change a response body to include a recognizable string
-
-WARNING: Avoid changing artifact names, Dockerfile, or pipeline paths unless the workshop instructs it.
-
-Add the following endpoint inside your resource class:
-
+.6. Modify code and verify live reload + Swagger refresh
+. Open `src/main/java/com/neuralbank/api/CreditResource.java`.
+. Add a simple new endpoint under `@Path("/api")`:
++
 [source,java]
 ----
 @GET
-@Path("/hello-workshop")
+@Path("/hello")
 @Produces(MediaType.TEXT_PLAIN)
-public String helloWorkshop() {
-    return "hello-workshop: backend is running";
+public String hello() {
+    return "hello from Dev Spaces";
 }
 ----
-
-If your IDE shows missing imports, add:
-
-[source,java]
-----
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-----
-
-Fix compile errors before continuing; the remote pipeline will fail the same way.
++
+. Save the file and watch the `04-run` terminal; Quarkus should recompile automatically.
+. Go back to Swagger UI and verify the new `GET /api/hello` endpoint appears and works.
 
 == Commit and Push to Gitea
+
+.7. Commit and push from Dev Spaces
+. Use the *Source Control* view in the IDE to stage your change, create a commit, and push it.
+. Alternatively, use the terminal:
 
 [.console-input]
 [source,bash]
