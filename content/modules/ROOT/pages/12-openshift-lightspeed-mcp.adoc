@@ -131,7 +131,7 @@ The MCP Gateway federates **55 tools** from 4 backend MCP servers, plus 7 from D
 
 ==== Example Prompts
 
-* _"Deploy a Redis database in my namespace"_ → `ocpdeployDatabase`
+* _"Deploy a Redis database in the `{user_name}-neuralbank` namespace"_ → `ocpdeployDatabase`
 * _"Check the cluster health"_ → `ocpcheckClusterHealth`
 * _"Are there any pods with resource issues?"_ → `ocpdetectResourceIssues`
 * _"Create a HorizontalPodAutoscaler for my backend"_ → `ocpcreateHpa`
