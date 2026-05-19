@@ -29,11 +29,6 @@ components:
       memoryLimit: 4Gi
       cpuLimit: "2"
       mountSources: true
-      endpoints:
-        - name: quarkus
-          targetPort: 8080
-          exposure: public
-          protocol: http
 commands:
   - id: 01-build
     exec:
@@ -55,7 +50,6 @@ In this section you will use Dev Spaces to inspect the devfile, scan dependencie
 . Open `devfile.yaml` in the repository root.
 . Read it and identify the key pieces:
 * Workspace container resources (CPU/memory) under `components[].container`.
-* The **public endpoint** for Quarkus on port `8080` (`endpoints: - name: quarkus`).
 * The available commands (these show up as tasks) and what they do:
 ** `01-build` runs `mvn package -DskipTests`
 ** `02-run` runs `mvn quarkus:dev` for live reload
@@ -92,9 +86,10 @@ The project exposes build and run as **tasks from the devfile**.
 . Keep it running to enable live reload.
 
 .5. Open Quarkus Dev UI and Swagger UI
-. Open the public endpoint created from the devfile:
-* In the IDE, open the *Ports/Endpoints* view (or use the command palette `Devfile: Open Endpoint`).
-* Open the `quarkus` endpoint (port `8080`).
+. When `devfile: 02-run` is running, Dev Spaces should detect that Quarkus is listening on port `8080`.
+. Open the endpoint:
+* Use the IDE prompt to open port `8080` (recommended), or
+* Open the *Ports/Endpoints* view and open/expose port `8080`.
 . Open Quarkus Dev UI at `/q/dev-ui/`.
 . From Dev UI, open **Swagger UI** (or go directly to `/q/swagger-ui/`).
 
@@ -110,11 +105,11 @@ The project exposes build and run as **tasks from the devfile**.
 @Path("/hello")
 @Produces(MediaType.TEXT_PLAIN)
 public String hello() {
-    return "hello from Dev Spaces";
+    return "hello from workshop";
 }
 ----
 +
-. Save the file and watch the `04-run` terminal; Quarkus should recompile automatically.
+. Save the file and watch the `02-run` terminal; Quarkus should recompile automatically.
 . Go back to Swagger UI and verify the new `GET /api/hello` endpoint appears and works.
 
 == Commit and Push to Gitea
@@ -148,7 +143,7 @@ This avoids TLS certificate issues with self-signed cluster certificates.
 == Verify Deployment of the New Version
 
 . Under **Workloads -> Pods**, confirm the Deployment performed a rollout (new pods with a recent timestamp).
-. Try the endpoints again:
+. After the PipelineRun finishes, verify the *deployed* Route also has your change.
 
 [.console-input]
 [source,bash,subs="attributes+"]
@@ -161,7 +156,7 @@ SECRET_NAME=$(oc get apikey -n "$NS" "$APIKEY_NAME" -o jsonpath='{.status.secret
 API_KEY=$(oc get secret -n "$NS" "$SECRET_NAME" -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
 
 curl -s -H "X-API-Key: $API_KEY" \
-  "https://neuralbank-backend-{user_name}-neuralbank.{cluster_domain}/api/hello-workshop"
+  "https://neuralbank-backend-{user_name}-neuralbank.{cluster_domain}/api/hello"
 ----
 
 You should see the change reflected in the response.
