@@ -14,10 +14,6 @@
 * xref:07-explore-argocd-apis.adoc[7. Explore ArgoCD and APIs]
 * xref:08-devspaces-update.adoc[8. Update Code with DevSpaces]
 
-.Connectivity Link & API Security
-* xref:09-explore-connectivity-link-oidc.adoc[9. OIDC Authentication (Neuralbank)]
-* xref:10-explore-connectivity-link-apikey.adoc[10. API Key Authentication (NFL Wallet)]
-
 .AI-Assisted Development
 * xref:11-developer-lightspeed.adoc[11. Developer Lightspeed]
 * xref:12-openshift-lightspeed-mcp.adoc[12. OpenShift Lightspeed & MCP Gateway]
