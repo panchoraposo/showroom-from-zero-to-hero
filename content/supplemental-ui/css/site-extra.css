@@ -158,3 +158,22 @@ video {
 .poweredBy {
     display: none !important;
 }
+
+/* Workshop banner on home page (Tech Day Chile) */
+.techday-banner {
+    max-width: 520px;
+    width: 70%;
+    height: auto;
+}
+@media (max-width: 768px) {
+    .techday-banner {
+        max-width: 360px;
+        width: 85%;
+    }
+}
+@media (max-width: 480px) {
+    .techday-banner {
+        max-width: 280px;
+        width: 92%;
+    }
+}

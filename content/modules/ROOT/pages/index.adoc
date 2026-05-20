@@ -2,7 +2,7 @@
 
 ++++
 <div style="text-align:center;margin:16px 0 8px;">
-  <img src="https://mktdevzone.com/redhat/2026/SAC/SOLA_WEST/2604-TechDay-Chile/AGENDA/mailing/imagenes/img-01.jpg" alt="Red Hat Tech Day Chile" style="height:64px;width:auto;">
+  <img class="techday-banner" src="https://mktdevzone.com/redhat/2026/SAC/SOLA_WEST/2604-TechDay-Chile/AGENDA/mailing/imagenes/img-01.jpg" alt="Red Hat Tech Day Chile">
 </div>
 ++++
 
