@@ -9,22 +9,8 @@
     <div id="topbar-nav" class="navbar-menu" style="display:flex;flex:1;align-items:center;">
       <div class="navbar-end" style="margin-left:auto;">
         <div class="navbar-item" style="gap:8px;flex-wrap:wrap;align-items:center;">
-          <a id="link-lang-en" href="#" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="English">EN</a>
-          <a id="link-lang-es" href="#" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="Español">ES</a>
-          <span style="border-left:1px solid #555;height:20px;margin:0 4px;"></span>
-          <span id="user-badge" style="display:none;background:#292929;color:#fff;padding:4px 12px;border-radius:16px;font-size:0.85rem;border:1px solid #444;">
-            <i class="fa fa-user" style="margin-right:4px;"></i>
-            <span id="user-badge-name"></span>
-          </span>
-          <div id="vars-edit-panel" style="display:none;gap:8px;flex-wrap:wrap;align-items:center;">
-            <label style="color:#fff;font-size:0.85rem;">User:</label>
-            <input type="text" id="user-name-input" style="width:80px;padding:2px 6px;border-radius:4px;border:1px solid #ccc;font-size:0.85rem;" placeholder="user1">
-            <button type="button" id="vars-save" style="background:#0066cc;color:#fff;border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Save</button>
-            <button type="button" id="vars-cancel-edit" style="background:#6a6e73;color:#fff;border:none;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:0.8rem;">Cancel</button>
-          </div>
-          <button type="button" id="vars-edit-btn" title="Change user" style="display:none;background:transparent;color:#ccc;border:1px solid #555;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:0.75rem;">
-            <i class="fa fa-pencil"></i>
-          </button>
+          <a id="link-lang-en" href="/modules/" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="English">EN</a>
+          <a id="link-lang-es" href="/modules-es/" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="Español">ES</a>
         </div>
       </div>
     </div>
@@ -32,109 +18,24 @@
 </header>
 <script>
 (function() {
-  function getSearchParams() {
-    var params = new URLSearchParams(window.location.search);
-    try {
-      if (window.parent && window.parent !== window) {
-        var pp = new URLSearchParams(window.parent.location.search);
-        pp.forEach(function(val, key) { if (!params.has(key)) params.set(key, val); });
-      }
-    } catch(e) {}
-    return params;
-  }
-
   function init() {
-    var badge = document.getElementById('user-badge');
-    var badgeName = document.getElementById('user-badge-name');
-    var editPanel = document.getElementById('vars-edit-panel');
-    var editBtn = document.getElementById('vars-edit-btn');
-    var ui = document.getElementById('user-name-input');
-    var save = document.getElementById('vars-save');
-    var cancelEdit = document.getElementById('vars-cancel-edit');
     var langEn = document.getElementById('link-lang-en');
     var langEs = document.getElementById('link-lang-es');
+    if (!langEn || !langEs) return;
 
-    var params = getSearchParams();
-    var qpDomain = params.get('CLUSTER_DOMAIN');
-    var qpUser = params.get('USER_NAME');
-    if (qpDomain) localStorage.setItem('CLUSTER_DOMAIN', qpDomain);
-    if (qpUser) localStorage.setItem('USER_NAME', qpUser);
+    var qs = window.location.search || '';
+    var h = window.location.hash || '';
 
-    var storedUser = localStorage.getItem('USER_NAME') || '';
+    // Always switch to the component root to avoid 404s.
+    langEn.href = '/modules/' + qs + h;
+    langEs.href = '/modules-es/' + qs + h;
 
-    if (storedUser && badge && badgeName) {
-      badgeName.textContent = storedUser;
-      badge.style.display = 'inline';
-      if (editBtn) editBtn.style.display = 'inline-block';
-      if (editPanel) editPanel.style.display = 'none';
-    } else {
-      if (badge) badge.style.display = 'none';
-      if (editBtn) editBtn.style.display = 'none';
-      if (editPanel) editPanel.style.display = 'flex';
-      if (ui) ui.value = '';
-    }
-
-    if (editBtn) editBtn.onclick = function() {
-      badge.style.display = 'none';
-      editBtn.style.display = 'none';
-      editPanel.style.display = 'flex';
-      if (ui) ui.value = storedUser;
-      ui.focus();
-    };
-
-    if (cancelEdit) cancelEdit.onclick = function() {
-      editPanel.style.display = 'none';
-      if (storedUser) {
-        badge.style.display = 'inline';
-        editBtn.style.display = 'inline-block';
-      }
-    };
-
-    if (save) save.onclick = function() {
-      var u = (ui.value || '').trim();
-      if (u) {
-        localStorage.setItem('USER_NAME', u);
-        location.reload();
-      }
-    };
-
-    // Language switcher: keep same page path when possible.
-    function setLangLinks() {
-      if (!langEn || !langEs) return;
-      var href = window.location.href;
-      try {
-        var u = new URL(href);
-        var p = u.pathname || '/';
-        var qs = u.search || '';
-        var h = u.hash || '';
-
-        function swap(fromSeg, toSeg) {
-          if (p.indexOf(fromSeg) === 0) return toSeg + p.slice(fromSeg.length) + qs + h;
-          return null;
-        }
-
-        var toEs = swap('/modules/', '/modules-es/') || swap('/', '/modules-es/');
-        var toEn = swap('/modules-es/', '/modules/') || swap('/', '/modules/');
-
-        // If the current URL doesn't include component segments, fall back to component roots.
-        if (!toEs) toEs = '/modules-es/' + qs + h;
-        if (!toEn) toEn = '/modules/' + qs + h;
-
-        langEs.href = toEs;
-        langEn.href = toEn;
-
-        var onEs = (p.indexOf('/modules-es/') === 0);
-        langEs.style.opacity = onEs ? '1.0' : '0.75';
-        langEn.style.opacity = onEs ? '0.75' : '1.0';
-        langEs.style.borderColor = onEs ? '#73bcf7' : '#444';
-        langEn.style.borderColor = onEs ? '#444' : '#73bcf7';
-      } catch (e) {
-        langEs.href = '/modules-es/';
-        langEn.href = '/modules/';
-      }
-    }
-
-    setLangLinks();
+    var p = window.location.pathname || '/';
+    var onEs = (p.indexOf('/modules-es/') === 0);
+    langEs.style.opacity = onEs ? '1.0' : '0.75';
+    langEn.style.opacity = onEs ? '0.75' : '1.0';
+    langEs.style.borderColor = onEs ? '#73bcf7' : '#444';
+    langEn.style.borderColor = onEs ? '#444' : '#73bcf7';
 
   }
 
