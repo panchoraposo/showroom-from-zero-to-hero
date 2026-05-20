@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <script>
 (function() {
   var VARS = [
-    { key: 'CLUSTER_DOMAIN', placeholder: '__CLUSTER_DOMAIN__', label: 'Cluster domain', hint: 'apps.cluster-xxx.dynamic.redhatworkshops.io' },
-    { key: 'USER_NAME',      placeholder: '%USER_NAME%',        label: 'Username',       hint: 'user1' }
+    { key: 'CLUSTER_DOMAIN', placeholder: '__CLUSTER_DOMAIN__', altPlaceholders: ['{cluster_domain}'], label: 'Cluster domain', hint: 'apps.cluster-xxx.dynamic.redhatworkshops.io' },
+    { key: 'USER_NAME',      placeholder: '%USER_NAME%',        altPlaceholders: ['{user_name}'],      label: 'Username',       hint: 'user1' }
   ];
   function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   function get(k) { return localStorage.getItem(k) || ''; }
@@ -46,19 +46,24 @@ document.addEventListener('DOMContentLoaded', function() {
     VARS.forEach(function(v) {
       var val = get(v.key);
       if (!val) return;
-      var re = new RegExp(esc(v.placeholder), 'g');
-      document.querySelectorAll('a[href*="' + v.placeholder + '"]').forEach(function(a) {
-        var h = a.getAttribute('href');
-        if (h) a.setAttribute('href', h.replace(re, val));
-      });
-      var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      var nodes = [];
-      while (walker.nextNode()) {
-        if (walker.currentNode.textContent.indexOf(v.placeholder) !== -1) nodes.push(walker.currentNode);
-      }
-      nodes.forEach(function(n) { n.textContent = n.textContent.replace(re, val); });
-      document.querySelectorAll('code, pre, strong, em, span, p, li, td').forEach(function(el) {
-        if (el.innerHTML.indexOf(v.placeholder) !== -1) el.innerHTML = el.innerHTML.replace(re, val);
+
+      var placeholders = [v.placeholder].concat(v.altPlaceholders || []);
+      placeholders.forEach(function(ph) {
+        if (!ph) return;
+        var re = new RegExp(esc(ph), 'g');
+        document.querySelectorAll('a[href*="' + ph + '"]').forEach(function(a) {
+          var h = a.getAttribute('href');
+          if (h) a.setAttribute('href', h.replace(re, val));
+        });
+        var walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+        var nodes = [];
+        while (walker.nextNode()) {
+          if (walker.currentNode.textContent.indexOf(ph) !== -1) nodes.push(walker.currentNode);
+        }
+        nodes.forEach(function(n) { n.textContent = n.textContent.replace(re, val); });
+        document.querySelectorAll('code, pre, strong, em, span, p, li, td').forEach(function(el) {
+          if (el.innerHTML.indexOf(ph) !== -1) el.innerHTML = el.innerHTML.replace(re, val);
+        });
       });
     });
   }
