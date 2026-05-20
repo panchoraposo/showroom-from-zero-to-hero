@@ -153,3 +153,8 @@ video {
 .doc-prev-next-next .doc-prev-next-label {
     justify-content: flex-end;
 }
+
+/* Hide theme "Powered by Red Hat Demo Platform" footer link */
+.poweredBy {
+    display: none !important;
+}
