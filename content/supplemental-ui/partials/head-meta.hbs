@@ -304,6 +304,10 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.title = 'Click to view 3D architecture';
     btn.innerHTML = '<img src="'+logoSrc+'" alt="Red Hat Tech Day Chile" style="cursor:pointer;max-width:240px;height:auto;" onclick="openViz3D()">';
     document.body.appendChild(btn);
+
+    // Remove the theme "Powered by ..." footer link.
+    var pb = document.querySelector('a.poweredBy');
+    if (pb) pb.remove();
   });
 })();
 </script>
