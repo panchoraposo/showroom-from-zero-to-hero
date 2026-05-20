@@ -10,6 +10,6 @@ view_switcher:
 
 tabs:
   - name: Developer Hub
-    url: '/modules/open-developer-hub.html'
+    url: 'https://backstage-developer-hub-developer-hub.${DOMAIN}'
   - name: Terminal
     url: '/terminal/'
