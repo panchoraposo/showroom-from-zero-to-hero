@@ -222,7 +222,11 @@ Estas tools conectan OLS directamente a Red Hat Developer Hub (no pasan por el K
 * _"List all Software Templates available in Developer Hub"_ → `fetch-template-metadata`
 * _"Show me all registered components"_ → `fetch-catalog-entities`
 * _"What entities have TechDocs?"_ → `fetch-techdocs`
-* _"Register a new entity from https://gitea.example.com/catalog-info.yaml"_ → `register-catalog-entities`
+* _"Register a new entity from https://raw.githubusercontent.com/redhat-developer/red-hat-developer-hub-software-templates/main/templates/github/nodejs-backend/template.yaml"_ → `register-catalog-entities`
++
+También puedes registrar desde la Gitea del workshop (URL raw), por ejemplo:
++
+* _"Register a new entity from https://gitea-gitea.{cluster_domain}/ws-{user_name}/neuralbank-backend/raw/branch/main/catalog-info.yaml"_ → `register-catalog-entities`
 
 == ¿Qué es MCP (Model Context Protocol)?
 
