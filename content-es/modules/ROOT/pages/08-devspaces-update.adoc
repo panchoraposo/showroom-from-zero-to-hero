@@ -96,8 +96,8 @@ El proyecto expone build y run como **tasks del devfile**.
 == Hacer un cambio de código
 
 .6. Modificar código y verificar live reload + refresh de Swagger
-. Open `src/main/java/com/neuralbank/api/CreditResource.java`.
-. Add a simple new endpoint under `@Path("/api")`:
+. Abre `src/main/java/com/neuralbank/api/CreditResource.java`.
+. Agrega un endpoint simple bajo `@Path("/api")`:
 +
 [source,java]
 ----
@@ -114,7 +114,7 @@ public String hello() {
 
 == Commit y push a Gitea
 
-.7. Commit and push from Dev Spaces
+.7. Commit y push desde Dev Spaces
 . Usa la vista *Source Control* del IDE para hacer stage del cambio, crear un commit y hacer push.
 . Alternativamente, usa el terminal:
 
@@ -132,7 +132,7 @@ git push origin main
 . Ve a **OpenShift Console -> Pipelines -> PipelineRuns** en el proyecto `{user_name}-neuralbank`.
 . Identifica un nuevo run disparado por el push reciente.
 
-The Gitea webhook uses an internal service URL to trigger the EventListener:
+El webhook de Gitea usa una URL interna de servicio para gatillar el EventListener:
 
 ----
 http://el-neuralbank-backend-listener.{user_name}-neuralbank.svc.cluster.local:8080
@@ -192,6 +192,6 @@ curl -i "http://localhost:8080/mcp/sse"
 npx @anthropic-ai/mcp-inspector http://localhost:8080/mcp/sse
 ----
 
-== Summary
+== Resumen
 
 Demostraste el ciclo completo **Dev Spaces -> Git -> Tekton -> OpenShift**, alineado con GitOps y la tarjeta del componente en Developer Hub. Los desarrolladores trabajan en un ambiente consistente mientras la plataforma aplica estándares y automatización.

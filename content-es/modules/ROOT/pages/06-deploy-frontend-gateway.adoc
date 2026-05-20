@@ -22,7 +22,7 @@ Deberías tener **neuralbank-backend** corriendo en el namespace `{user_name}-ne
 | **Owner** | `{user_name}`
 |===
 
-. Click **Create** and wait for scaffolder steps to finish.
+. Haz clic en **Create** y espera a que terminen los pasos del scaffolder.
 
 == Paso 2: Desplegar Customer Service MCP
 
@@ -47,8 +47,8 @@ En Gitea (`https://gitea-gitea.{cluster_domain}`), confirma dos repositorios nue
 
 == Paso 4: Revisar Applications en ArgoCD
 
-. Open ArgoCD: `https://openshift-gitops-server-openshift-gitops.{cluster_domain}`
-. Locate Applications for frontend and MCP in namespace `{user_name}-neuralbank`.
+. Abre ArgoCD: `https://openshift-gitops-server-openshift-gitops.{cluster_domain}`
+. Ubica las Applications de frontend y MCP en el namespace `{user_name}-neuralbank`.
 . Verifica **sync** y **health**.
 
 == Paso 5: Cómo se conecta el frontend

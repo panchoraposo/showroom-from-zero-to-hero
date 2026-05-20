@@ -164,9 +164,9 @@ curl -s -X POST \
   | jq .
 ----
 
-== Quick Rate-Limit Test
+== Prueba rápida de rate-limit
 
-This API also has rate limiting enabled (via Kuadrant PlanPolicy). The **readonly** key is on the **free** plan (**10 requests per minute**) so you can trigger `429` quickly:
+Esta API también tiene rate limiting habilitado (vía Kuadrant PlanPolicy). La key **readonly** está en el plan **free** (**10 requests por minuto**), así que puedes gatillar `429` rápidamente:
 
 [.console-input]
 [source,bash,subs="attributes+"]
@@ -182,9 +182,9 @@ for i in $(seq 1 12); do
 done
 ----
 
-The first 10 should return `200`. Requests 11+ should return `429 Too Many Requests`. If you don’t see `429`, wait 60 seconds and retry.
+Las primeras 10 deberían retornar `200`. Las requests 11+ deberían retornar `429 Too Many Requests`. Si no ves `429`, espera 60 segundos y reintenta.
 
-== How API Key Auth Works
+== Cómo funciona la autenticación por API Key
 
 [mermaid]
 ....
@@ -205,12 +205,12 @@ sequenceDiagram
     end
 ....
 
-== Summary
+== Resumen
 
-The API Key pattern is ideal for:
+El patrón de API Key es ideal para:
 
 * Machine-to-machine (M2M) integrations
 * CI/CD pipelines consuming APIs
 * External partners with long-lived credentials
 
-Both patterns (OIDC and API Key) are powered by the same stack: **Istio Gateway + HTTPRoute + Kuadrant policies**, demonstrating the flexibility of Red Hat Connectivity Link.
+Ambos patrones (OIDC y API Key) usan el mismo stack: **Istio Gateway + HTTPRoute + políticas de Kuadrant**, demostrando la flexibilidad de Red Hat Connectivity Link.

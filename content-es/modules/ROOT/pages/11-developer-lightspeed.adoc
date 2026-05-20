@@ -37,7 +37,7 @@ Prueba preguntando: "How do I build a backend service for this workshop using So
 
 == Arquitectura
 
-Developer Lightspeed uses a **LiteLLM proxy** to route requests to the LLM model and a **Llama Stack** with RAG (Retrieval Augmented Generation) for RHDH-specific documentation:
+Developer Lightspeed usa un **proxy LiteLLM** para enrutar requests al modelo y un **Llama Stack** con RAG (Retrieval Augmented Generation) para documentación específica de RHDH:
 
 [mermaid]
 ....
@@ -51,7 +51,7 @@ graph LR
 
 == Configuración del plugin
 
-The Lightspeed plugin is configured as a dynamic plugin in Developer Hub:
+El plugin de Lightspeed se configura como dynamic plugin en Developer Hub:
 
 [source,yaml]
 ----
@@ -77,7 +77,7 @@ plugins:
 
 == Configuración del backend de Lightspeed
 
-The backend connects to the Llama Stack server running as a sidecar:
+El backend se conecta al servidor Llama Stack que corre como sidecar:
 
 [source,yaml]
 ----
@@ -99,7 +99,7 @@ lightspeed:
 
 == RAG: respuestas con contexto de documentación
 
-The Lightspeed instance is enhanced with **RAG** (Retrieval Augmented Generation) using RHDH product documentation:
+La instancia de Lightspeed se potencia con **RAG** (Retrieval Augmented Generation) usando documentación del producto RHDH:
 
 [source,yaml]
 ----
@@ -118,18 +118,18 @@ tool_groups:
       release, and extending with plugins.
 ----
 
-This means when you ask about RHDH features, the assistant retrieves relevant documentation chunks before generating a response, producing more accurate and grounded answers.
+Esto significa que cuando preguntas por features de RHDH, el asistente recupera chunks relevantes de documentación antes de generar la respuesta, produciendo respuestas más precisas y “grounded”.
 
-== Question Validation
+== Validación de preguntas
 
-Lightspeed includes a question validation shield that ensures questions are relevant to the platform:
+Lightspeed incluye un shield de validación que asegura que las preguntas sean relevantes para la plataforma:
 
-* Valid topics: Backstage, RHDH, Kubernetes, OpenShift, CI/CD, GitOps, Pipelines, Kuadrant
-* Off-topic questions receive a polite redirection
+* Temas válidos: Backstage, RHDH, Kubernetes, OpenShift, CI/CD, GitOps, Pipelines, Kuadrant
+* Preguntas off-topic reciben una redirección amable
 
-== RBAC Permissions
+== Permisos RBAC
 
-All authenticated users have Lightspeed permissions configured through Developer Hub RBAC:
+Todos los usuarios autenticados tienen permisos de Lightspeed configurados vía RBAC de Developer Hub:
 
 [source,csv]
 ----
@@ -138,6 +138,6 @@ p, role:default/authenticated, lightspeed.chat.create, create, allow
 p, role:default/authenticated, lightspeed.chat.delete, delete, allow
 ----
 
-== Summary
+== Resumen
 
-Developer Lightspeed brings AI assistance directly into the developer portal, helping you discover templates, understand the platform, and troubleshoot issues — all without leaving Developer Hub. The RAG integration ensures responses are grounded in actual RHDH documentation.
+Developer Lightspeed trae asistencia de IA directo al portal del desarrollador, ayudándote a descubrir templates, entender la plataforma y resolver problemas — sin salir de Developer Hub. La integración RAG asegura que las respuestas estén basadas en documentación real de RHDH.

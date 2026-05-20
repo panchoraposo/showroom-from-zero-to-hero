@@ -25,7 +25,7 @@ TIP: Estas herramientas también están disponibles desde los **Console Links** 
 
 == Dashboards en Grafana
 
-. Open Grafana at `https://grafana-observability.{cluster_domain}`
+. Abre Grafana en `https://grafana-observability.{cluster_domain}`
 . Explora dashboards preconfigurados para:
 ** Salud del cluster y uso de recursos
 ** Métricas por namespace para `{user_name}-neuralbank`
@@ -40,9 +40,9 @@ TIP: Estas herramientas también están disponibles desde los **Console Links** 
 
 == Kiali: visualización del service mesh
 
-. Open Kiali at `https://kiali-openshift-cluster-observability-operator.{cluster_domain}`
-. Navigate to the **Graph** view.
-. Select namespace `{user_name}-neuralbank` or `neuralbank-stack`.
+. Abre Kiali en `https://kiali-openshift-cluster-observability-operator.{cluster_domain}`
+. Navega a la vista **Graph**.
+. Selecciona el namespace `{user_name}-neuralbank` o `neuralbank-stack`.
 . Observa el flujo de tráfico entre servicios.
 
 Kiali muestra:
@@ -68,9 +68,9 @@ graph LR
 
 == Jaeger: trazas distribuidas
 
-. Open Jaeger at `https://jaeger.{cluster_domain}`
-. Select a service (e.g., `neuralbank-backend`).
-. Search for recent traces.
+. Abre Jaeger en `https://jaeger.{cluster_domain}`
+. Selecciona un servicio (p. ej. `neuralbank-backend`).
+. Busca trazas recientes.
 
 Cada traza muestra el camino completo de una request:
 
@@ -102,9 +102,9 @@ oc logs -n kuadrant-system -l app=limitador --tail=20
 
 La SPA del frontend Neuralbank incluye indicadores de health:
 
-* **Backend Gateway** — green/red status for `http://neuralbank-backend-gateway-istio:8080`
-* **MCP Gateway** — green/red status for `http://customer-service-mcp-gateway-istio:8080`
-* **MCP Tools** — lists available AI-callable tools from the MCP server
+* **Backend Gateway** — estado verde/rojo para `http://neuralbank-backend-gateway-istio:8080`
+* **MCP Gateway** — estado verde/rojo para `http://customer-service-mcp-gateway-istio:8080`
+* **MCP Tools** — lista tools disponibles invocables por IA desde el MCP server
 
 Estos indicadores dan visibilidad inmediata de conectividad del gateway sin salir de la aplicación.
 

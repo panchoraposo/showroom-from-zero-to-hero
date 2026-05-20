@@ -95,33 +95,33 @@ El MCP Gateway federó **55 tools** desde 4 servidores MCP, más 7 tools desde D
 
 [cols="2,3",options="header"]
 |===
-| Tool Name | Description
+| Nombre de tool | Descripción
 
-| `k8spods_list` | List all pods across the cluster
-| `k8spods_list_in_namespace` | List pods in a specific namespace
-| `k8spods_get` | Get details of a specific pod
-| `k8spods_log` | Get logs from a pod
-| `k8spods_top` | Show resource usage for pods
-| `k8spods_run` | Run a pod with a given image
-| `k8spods_exec` | Execute a command inside a pod
-| `k8spods_delete` | Delete a pod
-| `k8sresources_list` | List resources by kind in a namespace
-| `k8sresources_get` | Get a specific resource by name
-| `k8sresources_create_or_update` | Create or update a resource from YAML
-| `k8sresources_delete` | Delete a specific resource
-| `k8sresources_scale` | Scale a deployment/statefulset
-| `k8snamespaces_list` | List all namespaces
-| `k8sprojects_list` | List all OpenShift projects
-| `k8snodes_top` | Show resource usage for nodes
-| `k8snodes_log` | Get logs from a node
-| `k8snodes_stats_summary` | Get stats summary from a node
-| `k8sevents_list` | List events in a namespace
-| `k8shelm_install` | Install a Helm chart
-| `k8shelm_list` | List Helm releases
-| `k8shelm_uninstall` | Uninstall a Helm release
+| `k8spods_list` | Listar todos los pods del cluster
+| `k8spods_list_in_namespace` | Listar pods en un namespace específico
+| `k8spods_get` | Obtener detalles de un pod específico
+| `k8spods_log` | Obtener logs de un pod
+| `k8spods_top` | Ver uso de recursos de pods
+| `k8spods_run` | Ejecutar un pod con una imagen dada
+| `k8spods_exec` | Ejecutar un comando dentro de un pod
+| `k8spods_delete` | Eliminar un pod
+| `k8sresources_list` | Listar recursos por kind en un namespace
+| `k8sresources_get` | Obtener un recurso específico por nombre
+| `k8sresources_create_or_update` | Crear o actualizar un recurso desde YAML
+| `k8sresources_delete` | Eliminar un recurso específico
+| `k8sresources_scale` | Escalar un deployment/statefulset
+| `k8snamespaces_list` | Listar todos los namespaces
+| `k8sprojects_list` | Listar todos los proyectos de OpenShift
+| `k8snodes_top` | Ver uso de recursos de nodos
+| `k8snodes_log` | Obtener logs de un nodo
+| `k8snodes_stats_summary` | Obtener resumen de estadísticas de un nodo
+| `k8sevents_list` | Listar eventos en un namespace
+| `k8shelm_install` | Instalar un chart Helm
+| `k8shelm_list` | Listar releases Helm
+| `k8shelm_uninstall` | Desinstalar un release Helm
 |===
 
-==== Example Prompts
+==== Prompts de ejemplo
 
 * _"List all pods in the neuralbank-stack namespace"_ → `k8spods_list_in_namespace`
 * _"Show me the logs of the neuralbank-backend pod"_ → `k8spods_log`
@@ -134,30 +134,30 @@ El MCP Gateway federó **55 tools** desde 4 servidores MCP, más 7 tools desde D
 
 [cols="2,3",options="header"]
 |===
-| Tool Name | Description
+| Nombre de tool | Descripción
 
 | `ocpcreateDeployment` | Create a new Deployment
-| `ocpdeployDatabase` | Deploy a database (Redis, PostgreSQL, etc.)
-| `ocpcreateService` | Create a Kubernetes Service
-| `ocpcreateHpa` | Create a Horizontal Pod Autoscaler
-| `ocpcreateNetworkPolicy` | Create a NetworkPolicy
-| `ocpmonitorDeployments` | Monitor all deployments in a namespace
-| `ocpdetectResourceIssues` | Detect resource issues (OOMKill, pending pods)
-| `ocpcheckClusterHealth` | Check overall cluster health
-| `ocpcheckNodeConditions` | Check node conditions (Ready, Pressure)
-| `ocpcheckKubeletStatus` | Check kubelet status on nodes
-| `ocpcheckCrioStatus` | Check CRI-O container runtime status
-| `ocpgetPerformanceMetrics` | Get cluster performance metrics
-| `ocpanalyzeJournalctlPodErrors` | Analyze journalctl for pod errors
-| `ocpanalyzePodDisruptions` | Analyze pod disruption budgets
-| `ocprunCpuStressTest` | Run a CPU stress test
-| `ocprunNetworkTest` | Run a network connectivity test
-| `ocprunStorageBenchmark` | Run a storage I/O benchmark
-| `ocprunDatabaseBenchmark` | Run a database benchmark
-| `ocprunKubeBurner` | Run kube-burner load test
+| `ocpdeployDatabase` | Desplegar una base de datos (Redis, PostgreSQL, etc.)
+| `ocpcreateService` | Crear un Service de Kubernetes
+| `ocpcreateHpa` | Crear un Horizontal Pod Autoscaler
+| `ocpcreateNetworkPolicy` | Crear una NetworkPolicy
+| `ocpmonitorDeployments` | Monitorear deployments en un namespace
+| `ocpdetectResourceIssues` | Detectar problemas de recursos (OOMKill, pods pending)
+| `ocpcheckClusterHealth` | Revisar salud general del cluster
+| `ocpcheckNodeConditions` | Revisar condiciones de nodos (Ready, Pressure)
+| `ocpcheckKubeletStatus` | Revisar estado del kubelet en nodos
+| `ocpcheckCrioStatus` | Revisar estado del runtime CRI-O
+| `ocpgetPerformanceMetrics` | Obtener métricas de performance del cluster
+| `ocpanalyzeJournalctlPodErrors` | Analizar journalctl por errores de pods
+| `ocpanalyzePodDisruptions` | Analizar PodDisruptionBudgets
+| `ocprunCpuStressTest` | Ejecutar un stress test de CPU
+| `ocprunNetworkTest` | Ejecutar un test de conectividad de red
+| `ocprunStorageBenchmark` | Ejecutar un benchmark de I/O de storage
+| `ocprunDatabaseBenchmark` | Ejecutar un benchmark de base de datos
+| `ocprunKubeBurner` | Ejecutar un load test con kube-burner
 |===
 
-==== Example Prompts
+==== Prompts de ejemplo
 
 * _"Deploy a Redis database in the `{user_name}-neuralbank` namespace"_ → `ocpdeployDatabase`
 * _"Check the cluster health"_ → `ocpcheckClusterHealth`
@@ -170,26 +170,26 @@ El MCP Gateway federó **55 tools** desde 4 servidores MCP, más 7 tools desde D
 
 [cols="2,3",options="header"]
 |===
-| Tool Name | Description
+| Nombre de tool | Descripción
 
 | `argolist_applications` | List all ArgoCD applications (supports search, pagination)
-| `argolist_clusters` | List clusters registered with ArgoCD
-| `argoget_application` | Get full details of an application
-| `argoget_application_resource_tree` | Get the resource tree (all child resources)
-| `argoget_application_managed_resources` | Get managed resources with filters (kind, namespace)
-| `argoget_application_workload_logs` | Get logs from workloads managed by an app
-| `argoget_application_events` | Get application-level events
-| `argoget_resource_events` | Get events for a specific managed resource
-| `argoget_resources` | Get YAML manifests of managed resources
-| `argoget_resource_actions` | List available actions on a resource (restart, etc.)
-| `argocreate_application` | Create a new ArgoCD application
-| `argoupdate_application` | Update an existing application
-| `argodelete_application` | Delete an ArgoCD application
-| `argosync_application` | Trigger a sync (supports dry-run, prune, revision)
-| `argorun_resource_action` | Execute an action on a managed resource
+| `argolist_clusters` | Listar clusters registrados en ArgoCD
+| `argoget_application` | Obtener detalles completos de una application
+| `argoget_application_resource_tree` | Obtener el árbol de recursos (children)
+| `argoget_application_managed_resources` | Obtener recursos gestionados con filtros (kind, namespace)
+| `argoget_application_workload_logs` | Obtener logs de workloads gestionados por una app
+| `argoget_application_events` | Obtener eventos a nivel de application
+| `argoget_resource_events` | Obtener eventos de un recurso gestionado específico
+| `argoget_resources` | Obtener manifests YAML de recursos gestionados
+| `argoget_resource_actions` | Listar acciones disponibles sobre un recurso (restart, etc.)
+| `argocreate_application` | Crear una application en ArgoCD
+| `argoupdate_application` | Actualizar una application existente
+| `argodelete_application` | Eliminar una application de ArgoCD
+| `argosync_application` | Disparar un sync (soporta dry-run, prune, revision)
+| `argorun_resource_action` | Ejecutar una acción sobre un recurso gestionado
 |===
 
-==== Example Prompts
+==== Prompts de ejemplo
 
 * _"List all ArgoCD applications"_ → `argolist_applications`
 * _"Which applications are out of sync?"_ → `argolist_applications` + filter
@@ -237,11 +237,11 @@ MCP es un estándar abierto que permite a modelos de IA interactuar con herramie
 * **Prompts** — Plantillas de conversación predefinidas
 * **Transports** — Streamable HTTP (Kuadrant Gateway) o SSE (Developer Hub directo)
 
-The MCP Gateway acts as a federation layer, aggregating multiple MCP servers behind a single endpoint with unified authentication via Kuadrant.
+El MCP Gateway actúa como una capa de federación, agregando múltiples servidores MCP detrás de un único endpoint con autenticación unificada vía Kuadrant.
 
-== OLS Configuration
+== Configuración de OLS
 
-OpenShift Lightspeed connects to MCP servers through its `OLSConfig` custom resource:
+OpenShift Lightspeed se conecta a servidores MCP a través del custom resource `OLSConfig`:
 
 [source,yaml,subs="attributes+"]
 ----
@@ -267,9 +267,9 @@ spec:
               name: rhdh-mcp-token
 ----
 
-== MCP Gateway Registration
+== Registro en MCP Gateway
 
-Each backend MCP server is registered with the Kuadrant MCP Gateway:
+Cada servidor MCP backend se registra en el Kuadrant MCP Gateway:
 
 [source,yaml]
 ----
@@ -285,11 +285,11 @@ spec:
   path: /mcp
 ----
 
-The `toolPrefix` ensures tool names don't collide across servers (e.g., `argolist_applications` vs `k8spods_list`).
+El `toolPrefix` asegura que los nombres de tools no colisionen entre servidores (p. ej. `argolist_applications` vs `k8spods_list`).
 
-== ArgoCD MCP Server
+== Servidor MCP de ArgoCD
 
-The ArgoCD MCP server (`argoproj-labs/mcp-for-argocd`) runs on the Red Hat certified `ubi9/nodejs-22` image and uses Streamable HTTP transport:
+El servidor MCP de ArgoCD (`argoproj-labs/mcp-for-argocd`) corre sobre la imagen certificada `ubi9/nodejs-22` y usa transporte Streamable HTTP:
 
 [source,yaml]
 ----
@@ -308,7 +308,7 @@ env:
 
 == Customer Service MCP
 
-The workshop also deploys a **Customer Service MCP** as part of the Neuralbank stack. This MCP server exposes backend operations (customer CRUD, credit scoring) as AI-callable tools:
+El workshop también despliega un **Customer Service MCP** como parte del stack Neuralbank. Este servidor MCP expone operaciones de backend (CRUD de clientes, credit scoring) como tools invocables por IA:
 
 [.console-input]
 [source,bash,subs="attributes+"]
@@ -319,9 +319,9 @@ curl -s -H "X-API-Key: $API_KEY" \
   | jq .
 ----
 
-== Summary
+== Resumen
 
-OpenShift Lightspeed with the MCP Gateway provides **55 federated tools** across 5 MCP servers:
+OpenShift Lightspeed junto al MCP Gateway provee **55 tools federadas** a través de 5 servidores MCP:
 
 [cols="1,1,1",options="header"]
 |===
@@ -334,4 +334,4 @@ OpenShift Lightspeed with the MCP Gateway provides **55 federated tools** across
 | customer-svc-mcp | _(app)_ | varies
 |===
 
-This transforms the OpenShift console into an AI-powered operations center where platform engineers can manage Kubernetes resources, ArgoCD applications, Developer Hub catalog, and business services — all through natural language.
+Esto transforma la consola de OpenShift en un centro de operaciones con IA, donde engineers de plataforma pueden gestionar recursos Kubernetes, Applications de ArgoCD, el catálogo de Developer Hub y servicios de negocio — todo mediante lenguaje natural.

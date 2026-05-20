@@ -120,17 +120,17 @@ spec:
 | Method | How It Works
 
 | **API Key** (primary)
-| Send `X-API-Key` header with a key from a labeled Kubernetes Secret. This is the method used by the scaffolded frontend.
+| Envía el header `X-API-Key` con una key desde un Secret de Kubernetes con label. Este es el método usado por el frontend generado por template.
 
-| **OIDC JWT** (secondary)
-| Send `Authorization: Bearer <token>` with a valid JWT from Keycloak realm `neuralbank`. Useful for programmatic access if you already have a token.
+| **OIDC JWT** (secundario)
+| Envía `Authorization: Bearer <token>` con un JWT válido del realm `neuralbank` en Keycloak. Es útil para acceso programático si ya tienes un token.
 |===
 
-IMPORTANT: The scaffolded applications use **API Key as the primary authentication method**. The OIDC JWT option is available for Bearer token validation but does not include an interactive login flow. For a full interactive OIDC experience (browser redirect to Keycloak), see the pre-deployed `neuralbank-stack` in xref:09-explore-connectivity-link-oidc.adoc[Module 9].
+IMPORTANTE: Las aplicaciones generadas usan **API Key como método primario de autenticación**. La opción OIDC JWT sirve para validar Bearer tokens, pero no incluye un flujo interactivo de login. Para una experiencia OIDC interactiva completa (redirect del browser a Keycloak), revisa el stack pre-desplegado `neuralbank-stack` en xref:09-explore-connectivity-link-oidc.adoc[Módulo 9].
 
-== Step 7: Try the API Endpoints
+== Paso 7: Probar los endpoints de la API
 
-The backend exposes REST endpoints through the Kuadrant gateway. Use an API Key to authenticate:
+El backend expone endpoints REST a través del gateway de Kuadrant. Usa una API Key para autenticar:
 
 [.console-input]
 [source,bash,subs="attributes+"]
@@ -155,12 +155,12 @@ curl -s -H "X-API-Key: $API_KEY" \
   | jq .
 ----
 
-== Step 8: Confirm Catalog Registration
+== Paso 8: Confirmar registro en el Catalog
 
-. Return to **Developer Hub**.
-. Find component **neuralbank-backend** in the **Catalog**.
-. Open the entity card and review links to the repository, documentation, and relationships (**API** entity).
+. Vuelve a **Developer Hub**.
+. Busca el componente **neuralbank-backend** en el **Catalog**.
+. Abre la tarjeta de la entidad y revisa los links al repositorio, documentación y relaciones (entidad **API**).
 
-== Summary
+== Resumen
 
-You deployed the backend through the full path **Hub -> Template -> Gitea -> ArgoCD -> Tekton -> OpenShift**. The API is protected by Kuadrant with **API Key authentication** (primary) and optional OIDC JWT validation. All services are in namespace `{user_name}-neuralbank`.
+Desplegaste el backend siguiendo el flujo completo **Hub -> Template -> Gitea -> ArgoCD -> Tekton -> OpenShift**. La API queda protegida por Kuadrant con **autenticación por API Key** (primaria) y validación opcional OIDC JWT. Todos los servicios quedan en el namespace `{user_name}-neuralbank`.
