@@ -7,7 +7,7 @@
   <div style="font-size:2rem;">🔮</div>
   <div>
     <strong style="font-size:1.1rem;">Interactive 3D Architecture</strong><br>
-    <span style="opacity:0.8;font-size:0.9rem;">Click to explore the MCP Gateway graph with 5 servers and 55 tools — drag to rotate</span>
+    <span style="opacity:0.8;font-size:0.9rem;">Open the Tech Day 3D model to explore the MCP graph — drag to rotate</span>
   </div>
 </div>
 ++++
@@ -17,6 +17,13 @@
 . Log in to the **OpenShift Console** at `\https://console-openshift-console.{cluster_domain}`
 . Click the **Lightspeed** icon in the console header (chat bubble icon).
 . Ask questions about your cluster, workloads, or Kubernetes concepts.
+
+== Before You Run Prompts
+
+Two UI tips for a smoother experience:
+
+- **Tool output vs chat**: when a tool runs, the detailed result shows in **Tool output**. The assistant message may be short on purpose.
+- **3D model**: use the Tech Day icon (bottom-right) to open the interactive 3D view and relate prompts to MCP servers/tools.
 
 == Workshop Prompt Walkthrough (using MCP tools)
 
@@ -28,9 +35,16 @@ Run the following prompts in the Lightspeed chat. When Lightspeed asks to run a 
 * `List all ArgoCD applications`
 . Scale the frontend in your scaffolded namespace:
 * `Scale the frontend deployment to 2 replicas in the {user_name}-neuralbank namespace`
+. Create an HPA for the backend (explicit parameters help tool selection):
+* `Create a HorizontalPodAutoscaler for deployment neuralbank-backend in the {user_name}-neuralbank namespace with min 1 max 3 cpu 70`
 . Deploy Redis in your scaffolded namespace (choose one):
 * `Deploy a Redis database in the {user_name}-neuralbank namespace`
 * `Install Redis using Helm in the {user_name}-neuralbank namespace`
+
+. Developer Hub integration (direct tools, no gateway prefix):
+* `List all Software Templates available in Developer Hub`
+* `Show me all registered components`
+* `Register a new entity from https://gitea.example.com/catalog-info.yaml`
 
 == Architecture: OLS + MCP Gateway
 
@@ -148,7 +162,7 @@ The MCP Gateway federates **55 tools** from 4 backend MCP servers, plus 7 from D
 * _"Deploy a Redis database in the `{user_name}-neuralbank` namespace"_ → `ocpdeployDatabase`
 * _"Check the cluster health"_ → `ocpcheckClusterHealth`
 * _"Are there any pods with resource issues?"_ → `ocpdetectResourceIssues`
-* _"Create a HorizontalPodAutoscaler for my backend"_ → `ocpcreateHpa`
+* _"Create a HorizontalPodAutoscaler for deployment neuralbank-backend in the {user_name}-neuralbank namespace with min 1 max 3 cpu 70"_ → `ocpcreateHpa`
 * _"Run a network test between my services"_ → `ocprunNetworkTest`
 * _"Monitor all deployments in neuralbank-stack"_ → `ocpmonitorDeployments`
 

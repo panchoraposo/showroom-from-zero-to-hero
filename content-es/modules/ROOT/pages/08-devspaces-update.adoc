@@ -47,12 +47,12 @@ commands:
 En esta sección usarás Dev Spaces para inspeccionar el devfile, escanear dependencias con RHDA, compilar y ejecutar la app, acceder a Quarkus Dev UI + Swagger, hacer un pequeño cambio y pushearlo a Git.
 
 .1. Revisar el `devfile.yaml`
-. Open `devfile.yaml` in the repository root.
+. Abre `devfile.yaml` en la raíz del repositorio.
 . Léelo e identifica las piezas clave:
 * Recursos del contenedor (CPU/memoria) bajo `components[].container`.
 * Los comandos disponibles (aparecen como tasks) y qué hacen:
-** `01-build` runs `mvn package -DskipTests`
-** `02-run` runs `mvn quarkus:dev` for live reload
+** `01-build` ejecuta `mvn package -DskipTests`
+** `02-run` ejecuta `mvn quarkus:dev` para live reload
 . Abre también `.mvn/maven.config` y `.mvn/settings.xml` para ver cómo Maven está configurado para usar el Nexus in-cluster.
 
 == Dependency Analytics (RHDA) en Dev Spaces
@@ -60,12 +60,12 @@ En esta sección usarás Dev Spaces para inspeccionar el devfile, escanear depen
 Este paso usa la extensión *Red Hat Dependency Analytics* (RHDA) para escanear `pom.xml` y generar un reporte de dependencias/vulnerabilidades.
 
 .2. Activar RHDA y revisar `pom.xml`
-. Open `pom.xml`.
+. Abre `pom.xml`.
 . Asegura que la extensión *Red Hat Dependency Analytics* esté habilitada:
-* Open the *Extensions* view.
-* Search for `Dependency Analytics` (publisher `redhat`, extension `fabric8-analytics`) and enable/install it if needed.
+* Abre la vista *Extensions*.
+* Busca `Dependency Analytics` (publisher `redhat`, extensión `fabric8-analytics`) y actívala/instálala si es necesario.
 . Genera el reporte:
-* Right click `pom.xml` and run *Red Hat Dependency Analytics Report...* (or use the command palette).
+* Click derecho en `pom.xml` y ejecuta *Red Hat Dependency Analytics Report...* (o usa la command palette).
 . Revisa el reporte y comenta algunos hallazgos:
 * *Por qué aparecen CVEs*: a menudo por dependencias **transitivas** traídas por un framework (Quarkus, Netty, Jackson, etc.).
 * *Severidad vs explotabilidad*: la severidad es un punto de partida; el contexto importa (exposición de red, paths alcanzables, configuración).
@@ -76,22 +76,22 @@ Este paso usa la extensión *Red Hat Dependency Analytics* (RHDA) para escanear 
 El proyecto expone build y run como **tasks del devfile**.
 
 .3. Compilar el backend usando el task del devfile
-. Open the command palette and run `Tasks: Run Task`.
-. Select `devfile: 01-build`.
-. Wait for **BUILD SUCCESS**.
+. Abre la command palette y ejecuta `Tasks: Run Task`.
+. Selecciona `devfile: 01-build`.
+. Espera a ver **BUILD SUCCESS**.
 
 .4. Ejecutar el backend usando el task del devfile
-. Open the command palette and run `Tasks: Run Task`.
-. Select `devfile: 02-run`.
-. Keep it running to enable live reload.
+. Abre la command palette y ejecuta `Tasks: Run Task`.
+. Selecciona `devfile: 02-run`.
+. Déjalo corriendo para habilitar live reload.
 
 .5. Abrir Quarkus Dev UI y Swagger UI
-. When `devfile: 02-run` is running, Dev Spaces should detect that Quarkus is listening on port `8080`.
-. Open the endpoint:
-* Use the IDE prompt to open port `8080` (recommended), or
-* Open the *Ports/Endpoints* view and open/expose port `8080`.
-. Open Quarkus Dev UI at `/q/dev-ui/`.
-. From Dev UI, open **Swagger UI** (or go directly to `/q/swagger-ui/`).
+. Cuando `devfile: 02-run` está corriendo, Dev Spaces debería detectar que Quarkus escucha en el puerto `8080`.
+. Abre el endpoint:
+* Usa el prompt del IDE para abrir el puerto `8080` (recomendado), o
+* Abre la vista *Ports/Endpoints* y abre/expone el puerto `8080`.
+. Abre Quarkus Dev UI en `/q/dev-ui/`.
+. Desde Dev UI, abre **Swagger UI** (o ve directo a `/q/swagger-ui/`).
 
 == Hacer un cambio de código
 
@@ -109,14 +109,14 @@ public String hello() {
 }
 ----
 +
-. Save the file and watch the `02-run` terminal; Quarkus should recompile automatically.
-. Go back to Swagger UI and verify the new `GET /api/hello` endpoint appears and works.
+. Guarda el archivo y mira el terminal de `02-run`; Quarkus debería recompilar automáticamente.
+. Vuelve a Swagger UI y verifica que aparezca y funcione el nuevo endpoint `GET /api/hello`.
 
 == Commit y push a Gitea
 
 .7. Commit and push from Dev Spaces
-. Use the *Source Control* view in the IDE to stage your change, create a commit, and push it.
-. Alternatively, use the terminal:
+. Usa la vista *Source Control* del IDE para hacer stage del cambio, crear un commit y hacer push.
+. Alternativamente, usa el terminal:
 
 [.console-input]
 [source,bash]
@@ -127,10 +127,10 @@ git commit -m "workshop: demo change from Dev Spaces"
 git push origin main
 ----
 
-== Watch the Tekton Pipeline
+== Ver la Tekton Pipeline
 
-. Go to **OpenShift Console -> Pipelines -> PipelineRuns** in project `{user_name}-neuralbank`.
-. Identify a new run triggered by the recent push.
+. Ve a **OpenShift Console -> Pipelines -> PipelineRuns** en el proyecto `{user_name}-neuralbank`.
+. Identifica un nuevo run disparado por el push reciente.
 
 The Gitea webhook uses an internal service URL to trigger the EventListener:
 
@@ -138,12 +138,12 @@ The Gitea webhook uses an internal service URL to trigger the EventListener:
 http://el-neuralbank-backend-listener.{user_name}-neuralbank.svc.cluster.local:8080
 ----
 
-This avoids TLS certificate issues with self-signed cluster certificates.
+Esto evita problemas de TLS con certificados self-signed del cluster.
 
-== Verify Deployment of the New Version
+== Verificar el despliegue de la nueva versión
 
-. Under **Workloads -> Pods**, confirm the Deployment performed a rollout (new pods with a recent timestamp).
-. After the PipelineRun finishes, verify the *deployed* Route also has your change.
+. En **Workloads -> Pods**, confirma que el Deployment hizo un rollout (pods nuevos con timestamp reciente).
+. Después de que termine el PipelineRun, verifica que el Route *desplegado* también tenga tu cambio.
 
 [.console-input]
 [source,bash,subs="attributes+"]
@@ -159,8 +159,39 @@ curl -s -H "X-API-Key: $API_KEY" \
   "https://neuralbank-backend-{user_name}-neuralbank.{cluster_domain}/api/hello"
 ----
 
-You should see the change reflected in the response.
+Deberías ver el cambio reflejado en la respuesta.
+
+== Bonus: Editar el MCP Server en Dev Spaces (customer-service-mcp)
+
+El workshop también incluye el componente **Customer Service MCP**. Puedes editarlo y ejecutarlo en Dev Spaces, y validar los endpoints MCP que exponen sus tools.
+
+. Abre el componente en Developer Hub:
+* Ve al Catalog y abre **customer-service-mcp**
+* Haz clic en **Open in Dev Spaces**
+. Espera a que el workspace esté listo (mismo flujo que el backend).
+. Ejecuta el MCP server en modo dev:
+* `Tasks: Run Task` → `devfile: 02-run`
+. Abre Quarkus Dev UI:
+* Abre el puerto `8080`
+* Visita `/q/dev-ui/`
+. Valida endpoints MCP (desde el terminal de Dev Spaces):
++
+[.console-input]
+[source,bash]
+----
+curl -s "http://localhost:8080/q/health" | jq .
+curl -i "http://localhost:8080/mcp"
+curl -i "http://localhost:8080/mcp/sse"
+----
++
+. Opcional: interactúa con tools MCP usando MCP Inspector (requiere Node.js en el workspace):
++
+[.console-input]
+[source,bash]
+----
+npx @anthropic-ai/mcp-inspector http://localhost:8080/mcp/sse
+----
 
 == Summary
 
-You demonstrated the full cycle **Dev Spaces -> Git -> Tekton -> OpenShift**, aligned with GitOps and the component card in Developer Hub. Developers stay in a consistent environment while the platform applies standards and automation.
+Demostraste el ciclo completo **Dev Spaces -> Git -> Tekton -> OpenShift**, alineado con GitOps y la tarjeta del componente en Developer Hub. Los desarrolladores trabajan en un ambiente consistente mientras la plataforma aplica estándares y automatización.

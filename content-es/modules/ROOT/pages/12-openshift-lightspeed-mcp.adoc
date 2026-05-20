@@ -6,17 +6,24 @@
 <div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);border-radius:12px;padding:20px 24px;margin:16px 0;color:#fff;cursor:pointer;display:flex;align-items:center;gap:16px;" onclick="openViz3D()">
   <div style="font-size:2rem;">🔮</div>
   <div>
-    <strong style="font-size:1.1rem;">Interactive 3D Architecture</strong><br>
-    <span style="opacity:0.8;font-size:0.9rem;">Click to explore the MCP Gateway graph with 5 servers and 55 tools — drag to rotate</span>
+    <strong style="font-size:1.1rem;">Arquitectura 3D interactiva</strong><br>
+    <span style="opacity:0.8;font-size:0.9rem;">Abre el modelo 3D de Tech Day para explorar el grafo MCP — arrastra para rotar</span>
   </div>
 </div>
 ++++
 
 == Acceder a OpenShift Lightspeed
 
-. Log in to the **OpenShift Console** at `\https://console-openshift-console.{cluster_domain}`
-. Click the **Lightspeed** icon in the console header (chat bubble icon).
+. Inicia sesión en la **Consola de OpenShift** en `\https://console-openshift-console.{cluster_domain}`
+. Haz clic en el ícono **Lightspeed** en el header de la consola (burbuja de chat).
 . Haz preguntas sobre tu cluster, workloads o conceptos de Kubernetes.
+
+== Antes de ejecutar prompts
+
+Dos tips para que se vea mejor y sea más entendible:
+
+- **Tool output vs chat**: cuando una tool se ejecuta, el resultado detallado aparece en **Tool output**. El mensaje del asistente puede ser corto a propósito.
+- **Modelo 3D**: usa el ícono Tech Day (abajo a la derecha) para abrir la vista 3D e identificar servidores/tools del grafo MCP.
 
 == Walkthrough de prompts del workshop (usando tools MCP)
 
@@ -28,9 +35,16 @@ Ejecuta los siguientes prompts en el chat de Lightspeed. Cuando Lightspeed pida 
 * `List all ArgoCD applications`
 . Escalar el frontend en tu namespace generado:
 * `Scale the frontend deployment to 2 replicas in the {user_name}-neuralbank namespace`
+. Crear un HPA para el backend (parámetros explícitos ayudan a la tool):
+* `Create a HorizontalPodAutoscaler for deployment neuralbank-backend in the {user_name}-neuralbank namespace with min 1 max 3 cpu 70`
 . Desplegar Redis en tu namespace generado (elige uno):
 * `Deploy a Redis database in the {user_name}-neuralbank namespace`
 * `Install Redis using Helm in the {user_name}-neuralbank namespace`
+
+. Integración con Developer Hub (tools directas, sin prefijo del gateway):
+* `List all Software Templates available in Developer Hub`
+* `Show me all registered components`
+* `Register a new entity from https://gitea.example.com/catalog-info.yaml`
 
 == Arquitectura: OLS + MCP Gateway
 
@@ -73,9 +87,9 @@ connectivityLink:
 
 Si tu cluster ya tiene **Kuadrant/Authorino** corriendo y gestionando recursos `AuthConfig`, mantenlo deshabilitado para evitar conflictos de dependencias OLM.
 
-== MCP Tools Reference — 55 Tools
+== Referencia de herramientas MCP — 55 tools
 
-The MCP Gateway federates **55 tools** from 4 backend MCP servers, plus 7 from Developer Hub accessed directly. Each tool is callable by the LLM through natural language prompts.
+El MCP Gateway federó **55 tools** desde 4 servidores MCP, más 7 tools desde Developer Hub (acceso directo). Cada tool es invocable desde el chat con lenguaje natural.
 
 === Kubernetes Tools (prefix `k8s` — 22 tools)
 
@@ -148,7 +162,7 @@ The MCP Gateway federates **55 tools** from 4 backend MCP servers, plus 7 from D
 * _"Deploy a Redis database in the `{user_name}-neuralbank` namespace"_ → `ocpdeployDatabase`
 * _"Check the cluster health"_ → `ocpcheckClusterHealth`
 * _"Are there any pods with resource issues?"_ → `ocpdetectResourceIssues`
-* _"Create a HorizontalPodAutoscaler for my backend"_ → `ocpcreateHpa`
+* _"Create a HorizontalPodAutoscaler for deployment neuralbank-backend in the {user_name}-neuralbank namespace with min 1 max 3 cpu 70"_ → `ocpcreateHpa`
 * _"Run a network test between my services"_ → `ocprunNetworkTest`
 * _"Monitor all deployments in neuralbank-stack"_ → `ocpmonitorDeployments`
 
@@ -186,13 +200,13 @@ The MCP Gateway federates **55 tools** from 4 backend MCP servers, plus 7 from D
 * _"Show me the managed resources of type Deployment in ols"_ → `argoget_application_managed_resources`
 * _"Get the events for the mcp-gateway application"_ → `argoget_application_events`
 
-=== Developer Hub / Backstage Tools (no prefix — 7 tools, direct SSE)
+=== Tools de Developer Hub / Backstage (sin prefijo — 7 tools, SSE directo)
 
-These tools connect OLS directly to Red Hat Developer Hub (not through the Kuadrant Gateway):
+Estas tools conectan OLS directamente a Red Hat Developer Hub (no pasan por el Kuadrant Gateway):
 
 [cols="2,3",options="header"]
 |===
-| Tool Name | Description
+| Nombre de tool | Descripción
 
 | `fetch-template-metadata` | List and search Software Templates in the catalog
 | `fetch-catalog-entities` | List/search catalog entities (Components, APIs, Systems)
@@ -203,21 +217,21 @@ These tools connect OLS directly to Red Hat Developer Hub (not through the Kuadr
 | `retrieve-techdocs-content` | Retrieve TechDocs content for a specific entity
 |===
 
-==== Example Prompts
+==== Prompts de ejemplo
 
 * _"List all Software Templates available in Developer Hub"_ → `fetch-template-metadata`
 * _"Show me all registered components"_ → `fetch-catalog-entities`
 * _"What entities have TechDocs?"_ → `fetch-techdocs`
 * _"Register a new entity from https://gitea.example.com/catalog-info.yaml"_ → `register-catalog-entities`
 
-== What is MCP (Model Context Protocol)?
+== ¿Qué es MCP (Model Context Protocol)?
 
-MCP is an open standard that allows AI models to interact with external tools securely:
+MCP es un estándar abierto que permite a modelos de IA interactuar con herramientas externas de forma segura:
 
-* **Tools** — Functions the AI can call (e.g., list pods, sync ArgoCD apps)
-* **Resources** — Data the AI can read (e.g., cluster state, catalog entities)
-* **Prompts** — Pre-built conversation templates
-* **Transports** — Streamable HTTP (Kuadrant Gateway) or SSE (Developer Hub direct)
+* **Tools** — Funciones que la IA puede invocar (p. ej. listar pods, sync de ArgoCD)
+* **Resources** — Datos que la IA puede leer (p. ej. estado del cluster, entidades del catálogo)
+* **Prompts** — Plantillas de conversación predefinidas
+* **Transports** — Streamable HTTP (Kuadrant Gateway) o SSE (Developer Hub directo)
 
 The MCP Gateway acts as a federation layer, aggregating multiple MCP servers behind a single endpoint with unified authentication via Kuadrant.
 

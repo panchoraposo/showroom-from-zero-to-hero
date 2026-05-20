@@ -32,7 +32,7 @@ El workshop preconfigura prompts sugeridos:
 
 [.console-input]
 ----
-Prueba preguntando: "How do I deploy a new service using Software Templates?"
+Prueba preguntando: "How do I build a backend service for this workshop using Software Templates, and how does it get built with Tekton and deployed with Argo CD?"
 ----
 
 == Arquitectura

@@ -161,6 +161,37 @@ curl -s -H "X-API-Key: $API_KEY" \
 
 You should see the change reflected in the response.
 
+== Bonus: Edit the MCP Server in Dev Spaces (customer-service-mcp)
+
+The workshop also includes a **Customer Service MCP** component. You can edit and run it in Dev Spaces, and verify the MCP endpoints that expose its tools.
+
+. Open the component in Developer Hub:
+* Go to the Catalog and open **customer-service-mcp**
+* Click **Open in Dev Spaces**
+. Wait for the workspace to be ready (same flow as the backend).
+. Run the MCP server in dev mode:
+* Use `Tasks: Run Task` → `devfile: 02-run`
+. Open Quarkus Dev UI:
+* Open port `8080`
+* Visit `/q/dev-ui/`
+. Validate MCP endpoints (from the Dev Spaces terminal):
++
+[.console-input]
+[source,bash]
+----
+curl -s "http://localhost:8080/q/health" | jq .
+curl -i "http://localhost:8080/mcp"
+curl -i "http://localhost:8080/mcp/sse"
+----
++
+. Optional: interactively call MCP tools with the MCP Inspector (requires Node.js in the workspace):
++
+[.console-input]
+[source,bash]
+----
+npx @anthropic-ai/mcp-inspector http://localhost:8080/mcp/sse
+----
+
 == Summary
 
 You demonstrated the full cycle **Dev Spaces -> Git -> Tekton -> OpenShift**, aligned with GitOps and the component card in Developer Hub. Developers stay in a consistent environment while the platform applies standards and automation.
