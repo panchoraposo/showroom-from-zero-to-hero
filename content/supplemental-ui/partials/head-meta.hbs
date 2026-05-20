@@ -73,6 +73,23 @@ document.addEventListener('DOMContentLoaded', function() {
       var qp = params.get(v.key);
       if (qp) { set(v.key, qp); }
     });
+
+    // If CLUSTER_DOMAIN wasn't provided, infer it from the showroom hostname.
+    // Example: showroom-showroom.apps.cluster.example.com -> apps.cluster.example.com
+    if (!get('CLUSTER_DOMAIN')) {
+      try {
+        var host = window.location.hostname || '';
+        if (!host) {
+          try { host = (window.parent && window.parent.location && window.parent.location.hostname) || ''; } catch (e) {}
+        }
+        var parts = (host || '').split('.').filter(Boolean);
+        if (parts.length >= 2) {
+          var inferred = parts.slice(1).join('.');
+          if (inferred) set('CLUSTER_DOMAIN', inferred);
+        }
+      } catch (e) {}
+    }
+
     replacePlaceholders();
     [100, 500, 1000, 2000, 4000].forEach(function(ms) { setTimeout(replacePlaceholders, ms); });
   }

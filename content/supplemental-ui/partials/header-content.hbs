@@ -1,18 +1,16 @@
 <header class="header">
   <nav class="navbar">
-    <div class="navbar-brand">
-      <span class="navbar-item" style="margin-left: 2.5%; display:flex; align-items:center; gap:10px;">
-        <img src="{{{uiRootPath}}}/img/redhat-hat.svg" alt="Red Hat" style="height: 28px; width: auto;">
+    <div class="navbar-brand" style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+      <span class="navbar-item" style="margin-left: 2.5%; display:flex; align-items:center;">
+        <img src="{{{uiRootPath}}}/img/redhat-hat.svg" alt="Red Hat" style="height:28px;width:auto;">
       </span>
-      <span class="navbar-item site-title" style="color: #fff !important;">{{site.title}}</span>
-    </div>
-    <div id="topbar-nav" class="navbar-menu" style="display:flex;flex:1;align-items:center;">
-      <div class="navbar-end" style="margin-left:auto;">
-        <div class="navbar-item" style="gap:8px;flex-wrap:wrap;align-items:center;">
-          <a id="link-lang-en" href="/modules/" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="English">EN</a>
-          <a id="link-lang-es" href="/modules-es/" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="Español">ES</a>
-        </div>
-      </div>
+      <span class="navbar-item site-title" style="color:#fff !important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70vw;">
+        {{site.title}}
+      </span>
+      <span class="navbar-item" style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+        <a id="link-lang-en" href="/modules/" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="English">EN</a>
+        <a id="link-lang-es" href="/modules-es/" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="Español">ES</a>
+      </span>
     </div>
   </nav>
 </header>

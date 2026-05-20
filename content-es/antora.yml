@@ -3,7 +3,9 @@ title: From Zero To Hero con Red Hat Developer Hub (ES)
 version: ~
 asciidoc:
   attributes:
-    cluster_domain: apps.cluster.example.com
+    # Keep placeholders in generated HTML; replaced at runtime by supplemental UI.
+    cluster_domain: __CLUSTER_DOMAIN__
+    user_name: "%USER_NAME%"
     lang: es
 nav:
   - modules/ROOT/nav.adoc
