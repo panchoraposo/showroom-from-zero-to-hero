@@ -1,0 +1,77 @@
+= Propuesta de valor de Developer Hub
+
+Red Hat Developer Hub es la oferta empresarial basada en **Backstage**, el portal de desarrolladores open source de la CNCF. Provee un único punto de entrada donde los equipos descubren servicios, crean nuevos componentes siguiendo caminos probados y colaboran de forma integrada con la plataforma.
+
+== ¿Qué es Developer Hub?
+
+Developer Hub centraliza la experiencia de desarrollo frente a un ecosistema que suele estar fragmentado: múltiples consolas, repositorios, pipelines y clusters. En vez de pedir a cada persona memorizar URLs, permisos y convenciones, el portal expone **documentación viva**, **templates** e **integraciones** que reflejan cómo tu organización construye software en la práctica.
+
+== Portal de autoservicio para desarrolladores
+
+El enfoque de *autoservicio* significa que un/a desarrollador/a puede:
+
+* **Registrar o descubrir** componentes existentes en el catálogo sin tickets manuales.
+* **Crear nuevos proyectos** desde templates aprobados por la plataforma (golden paths).
+* **Abrir entornos de desarrollo integrados** (Dev Spaces) desde la página del componente.
+* **Consultar APIs, dependencias y ownership** en un solo lugar.
+* **Hacer preguntas** al asistente de IA mediante **Developer Lightspeed**.
+
+Esto reduce la dependencia del equipo de plataforma para tareas repetitivas y acelera el onboarding de nuevas personas.
+
+== Catálogo de software: descubrimiento y gobernanza
+
+El **Software Catalog** modela entidades como *Component*, *API*, *System*, *Domain* y *Resource*. Cada página enlaza código, documentación, pipelines y despliegues, por lo que el catálogo no es solo un listado: es un **mapa operativo** del paisaje de aplicaciones.
+
+== Software Templates: golden paths reproducibles
+
+Los **Software Templates** codifican el camino recomendado: estructura del repositorio, manifiestos Kubernetes/OpenShift, pipelines Tekton, `devfile.yaml` para Dev Spaces y registro en el catálogo. El/la desarrollador/a completa un formulario con parámetros seguros (nombre, owner, entorno) y el sistema ejecuta los pasos definidos en el template.
+
+== Plugins y extensibilidad
+
+Backstage está construido sobre un modelo de **plugins** que agrega tarjetas, páginas y acciones al catálogo. Red Hat Developer Hub incluye plugins soportados para:
+
+* **GitOps** — integración con ArgoCD para visualizar despliegues
+* **CI/CD** — monitoreo de pipelines Tekton
+* **Kubernetes** — vistas de Topology y recursos
+* **Lightspeed** — asistente de chat con IA (LLMs)
+* **Kuadrant** — gestión de productos de APIs y administración de API Keys
+
+== Integración con el stack de plataforma
+
+Developer Hub **orquesta** el stack de plataforma desde la experiencia del desarrollador:
+
+[mermaid]
+....
+graph TB
+    DH[Developer Hub] --> GIT[Gitea - Source of Truth]
+    DH --> ARGO[ArgoCD - GitOps Sync]
+    DH --> TEK[Tekton - CI/CD Pipelines]
+    DH --> DS[Dev Spaces - Cloud IDE]
+    DH --> LS[Lightspeed - AI Assistant]
+    ARGO --> OCP[OpenShift Cluster]
+    TEK --> OCP
+    OCP --> GW[Gateway API + Kuadrant]
+    GW --> OIDC[OIDC Policy]
+    GW --> RLP[Rate Limit Policy]
+    GW --> APIKEY[API Key Policy]
+....
+
+== Console Links y accesos rápidos
+
+La plataforma del workshop integra **Console Links** en el menú de aplicaciones de OpenShift y **tarjetas de acceso rápido** en la home de Developer Hub, para que todas las herramientas estén a un clic — sin necesidad de guardar marcadores de URLs.
+
+== Integración con RBAC y Keycloak
+
+El acceso al portal y a acciones sensibles se gobierna con **RBAC** y proveedores de identidad como **Keycloak**. Los grupos/roles del IdP se mapean a permisos en Developer Hub, de modo que los golden paths estén disponibles solo para las personas correctas y la información sensible quede acotada.
+
+== Reducir carga cognitiva y “time to production”
+
+Al combinar catálogo, templates e integraciones:
+
+* **Menos decisiones ad hoc** — se elige un camino ya validado.
+* **Menos errores de configuración** — manifiestos y pipelines salen del template.
+* **Ciclos más cortos** — de la idea al pod corriendo, con pasos guiados y visibles en el Hub.
+
+== Resumen
+
+Red Hat Developer Hub convierte OpenShift y el ecosistema GitOps en una **experiencia de producto** para desarrolladores: descubrimiento en el catálogo, creación disciplinada con templates, asistencia de IA con Lightspeed e integración con ArgoCD, Tekton, Dev Spaces, Kuadrant y Keycloak para entregar software con menos fricción y mayor consistencia.

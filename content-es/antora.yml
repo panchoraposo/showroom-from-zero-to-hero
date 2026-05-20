@@ -1,0 +1,9 @@
+name: modules-es
+title: From Zero To Hero con Red Hat Developer Hub (ES)
+version: ~
+asciidoc:
+  attributes:
+    cluster_domain: apps.cluster.example.com
+    lang: es
+nav:
+  - modules/ROOT/nav.adoc

@@ -1,0 +1,109 @@
+= Explorar Pipelines y Topology
+
+Luego de desplegar **neuralbank-backend**, inspecciona cómo **Tekton** materializa el CI/CD y cómo **OpenShift** representa la aplicación en la vista de Topology.
+
+== Abrir la consola de Pipelines
+
+. Inicia sesión en la **Consola de OpenShift**.
+. Selecciona el proyecto **`{user_name}-neuralbank`**.
+. En el menú lateral, ve a **Pipelines** (o **CI/CD -> Pipelines**).
+
+== Ubicar el PipelineRun
+
+. En la pestaña **PipelineRuns**, ordena por **Started** (más reciente primero).
+. Identifica una corrida asociada a `neuralbank-backend`.
+
+NOTE: Si no ves corridas, confirma que el trigger del webhook exista. Un CronJob configura automáticamente los webhooks de Gitea para los repositorios de cada usuario.
+
+== Definición del pipeline
+
+El pipeline está definido en `tekton/pipeline.yaml` del template:
+
+[source,yaml]
+----
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: neuralbank-backend-pipeline
+spec:
+  params:
+    - name: git-url
+    - name: git-revision
+      default: main
+    - name: image-name
+  tasks:
+    - name: git-clone
+      taskRef:
+        name: git-clone
+    - name: maven-build
+      taskRef:
+        name: maven
+      runAfter: [git-clone]
+    - name: build-image
+      taskRef:
+        name: buildah
+      runAfter: [maven-build]
+    - name: deploy
+      taskRef:
+        name: openshift-client
+      runAfter: [build-image]
+----
+
+== Revisar tareas del pipeline
+
+Abre el **PipelineRun** y examina cada task:
+
+[cols="1,2",options="header"]
+|===
+|Task |Qué revisar
+
+|`git-clone`
+|Repo y revisión clonados; revisa la URL de Gitea (usa URL interna de servicio)
+
+|`maven-build`
+|Build Java; logs de `mvn` y artefacto generado
+
+|`build-image`
+|Build de imagen con Buildah; push al registry interno
+
+|`deploy`
+|Actualización del deployment en OpenShift; verifica el nuevo `image` referenciado
+|===
+
+Para cada task, abre los **logs** y confirma que terminó en **Succeeded**.
+
+== Configuración del webhook
+
+Los pipelines se disparan con webhooks de Gitea. El TriggerBinding usa URLs internas de servicio para mayor confiabilidad:
+
+[source,yaml]
+----
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: neuralbank-backend-binding
+spec:
+  params:
+    - name: git-url
+      value: http://gitea-http.gitea.svc.cluster.local:3000/$(body.repository.full_name).git
+    - name: git-revision
+      value: $(body.after)
+----
+
+Esto permite que los builds por webhook funcionen sin problemas de certificados TLS.
+
+== Usar la vista de Topology
+
+. En la consola, abre la vista **Topology** del proyecto `{user_name}-neuralbank`.
+. Ubica el **Deployment** del backend (icono circular con aro de estado).
+. Haz clic en el nodo para abrir el panel lateral: **Pods**, **Services**, **Routes** y eventos.
+
+== Volver a Developer Hub
+
+. Abre **Developer Hub**.
+. Ubica el componente **neuralbank-backend** en el catálogo.
+. Desde la tarjeta de la entidad, revisa la pestaña **CI/CD** con el estado de Tekton.
+
+== Resumen
+
+Seguiste un PipelineRun task por task, entendiste la configuración del webhook, validaste el estado del deployment en Topology y lo relacionaste con su entrada en Developer Hub.

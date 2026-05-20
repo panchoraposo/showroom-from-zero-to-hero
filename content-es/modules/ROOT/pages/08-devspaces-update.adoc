@@ -1,0 +1,166 @@
+= Actualizar código con Dev Spaces
+
+Este módulo recorre el flujo **editar en IDE web -> commit a Gitea -> pipeline Tekton -> nuevo despliegue**, usando **Red Hat OpenShift Dev Spaces** y el componente **neuralbank-backend**.
+
+== Abrir el componente en Developer Hub
+
+. Inicia sesión en **Developer Hub**.
+. Busca **neuralbank-backend** en el **Catalog** y abre su página.
+. Haz clic en **Open in Dev Spaces** (o la acción equivalente del plugin).
+
+Si el botón no aparece, copia la URL del repositorio desde Gitea y crea el workspace en Dev Spaces manualmente.
+
+== Esperar a que el workspace inicie
+
+. Espera a que el **DevWorkspace** llegue a estado **Running**.
+. Abre el IDE en el navegador.
+
+El workspace usa el `devfile.yaml` generado por el template:
+
+[source,yaml]
+----
+schemaVersion: 2.2.2
+metadata:
+  name: neuralbank-backend
+components:
+  - name: tools
+    container:
+      image: registry.redhat.io/devspaces/udi-rhel9:latest
+      memoryLimit: 4Gi
+      cpuLimit: "2"
+      mountSources: true
+commands:
+  - id: 01-build
+    exec:
+      component: tools
+      commandLine: <...>
+      workingDir: ${PROJECT_SOURCE}
+  - id: 02-run
+    exec:
+      component: tools
+      commandLine: <...>
+      workingDir: ${PROJECT_SOURCE}
+----
+
+== Desarrollar en Dev Spaces (tasks del devfile)
+
+En esta sección usarás Dev Spaces para inspeccionar el devfile, escanear dependencias con RHDA, compilar y ejecutar la app, acceder a Quarkus Dev UI + Swagger, hacer un pequeño cambio y pushearlo a Git.
+
+.1. Revisar el `devfile.yaml`
+. Open `devfile.yaml` in the repository root.
+. Léelo e identifica las piezas clave:
+* Recursos del contenedor (CPU/memoria) bajo `components[].container`.
+* Los comandos disponibles (aparecen como tasks) y qué hacen:
+** `01-build` runs `mvn package -DskipTests`
+** `02-run` runs `mvn quarkus:dev` for live reload
+. Abre también `.mvn/maven.config` y `.mvn/settings.xml` para ver cómo Maven está configurado para usar el Nexus in-cluster.
+
+== Dependency Analytics (RHDA) en Dev Spaces
+
+Este paso usa la extensión *Red Hat Dependency Analytics* (RHDA) para escanear `pom.xml` y generar un reporte de dependencias/vulnerabilidades.
+
+.2. Activar RHDA y revisar `pom.xml`
+. Open `pom.xml`.
+. Asegura que la extensión *Red Hat Dependency Analytics* esté habilitada:
+* Open the *Extensions* view.
+* Search for `Dependency Analytics` (publisher `redhat`, extension `fabric8-analytics`) and enable/install it if needed.
+. Genera el reporte:
+* Right click `pom.xml` and run *Red Hat Dependency Analytics Report...* (or use the command palette).
+. Revisa el reporte y comenta algunos hallazgos:
+* *Por qué aparecen CVEs*: a menudo por dependencias **transitivas** traídas por un framework (Quarkus, Netty, Jackson, etc.).
+* *Severidad vs explotabilidad*: la severidad es un punto de partida; el contexto importa (exposición de red, paths alcanzables, configuración).
+* *Remediación*: suele ser mejor actualizar plataforma/BOM y verificar que cambie el árbol de dependencias.
+
+== Compilar y ejecutar en el workspace
+
+El proyecto expone build y run como **tasks del devfile**.
+
+.3. Compilar el backend usando el task del devfile
+. Open the command palette and run `Tasks: Run Task`.
+. Select `devfile: 01-build`.
+. Wait for **BUILD SUCCESS**.
+
+.4. Ejecutar el backend usando el task del devfile
+. Open the command palette and run `Tasks: Run Task`.
+. Select `devfile: 02-run`.
+. Keep it running to enable live reload.
+
+.5. Abrir Quarkus Dev UI y Swagger UI
+. When `devfile: 02-run` is running, Dev Spaces should detect that Quarkus is listening on port `8080`.
+. Open the endpoint:
+* Use the IDE prompt to open port `8080` (recommended), or
+* Open the *Ports/Endpoints* view and open/expose port `8080`.
+. Open Quarkus Dev UI at `/q/dev-ui/`.
+. From Dev UI, open **Swagger UI** (or go directly to `/q/swagger-ui/`).
+
+== Hacer un cambio de código
+
+.6. Modificar código y verificar live reload + refresh de Swagger
+. Open `src/main/java/com/neuralbank/api/CreditResource.java`.
+. Add a simple new endpoint under `@Path("/api")`:
++
+[source,java]
+----
+@GET
+@Path("/hello")
+@Produces(MediaType.TEXT_PLAIN)
+public String hello() {
+    return "hello from workshop";
+}
+----
++
+. Save the file and watch the `02-run` terminal; Quarkus should recompile automatically.
+. Go back to Swagger UI and verify the new `GET /api/hello` endpoint appears and works.
+
+== Commit y push a Gitea
+
+.7. Commit and push from Dev Spaces
+. Use the *Source Control* view in the IDE to stage your change, create a commit, and push it.
+. Alternatively, use the terminal:
+
+[.console-input]
+[source,bash]
+----
+git status
+git add <modified-files>
+git commit -m "workshop: demo change from Dev Spaces"
+git push origin main
+----
+
+== Watch the Tekton Pipeline
+
+. Go to **OpenShift Console -> Pipelines -> PipelineRuns** in project `{user_name}-neuralbank`.
+. Identify a new run triggered by the recent push.
+
+The Gitea webhook uses an internal service URL to trigger the EventListener:
+
+----
+http://el-neuralbank-backend-listener.{user_name}-neuralbank.svc.cluster.local:8080
+----
+
+This avoids TLS certificate issues with self-signed cluster certificates.
+
+== Verify Deployment of the New Version
+
+. Under **Workloads -> Pods**, confirm the Deployment performed a rollout (new pods with a recent timestamp).
+. After the PipelineRun finishes, verify the *deployed* Route also has your change.
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+export APP_NAME="${APP_NAME:-neuralbank-backend}"
+export NS="{user_name}-neuralbank"
+export APIKEY_NAME="{user_name}-${APP_NAME}"
+
+SECRET_NAME=$(oc get apikey -n "$NS" "$APIKEY_NAME" -o jsonpath='{.status.secretRef.name}')
+API_KEY=$(oc get secret -n "$NS" "$SECRET_NAME" -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
+
+curl -s -H "X-API-Key: $API_KEY" \
+  "https://neuralbank-backend-{user_name}-neuralbank.{cluster_domain}/api/hello"
+----
+
+You should see the change reflected in the response.
+
+== Summary
+
+You demonstrated the full cycle **Dev Spaces -> Git -> Tekton -> OpenShift**, aligned with GitOps and the component card in Developer Hub. Developers stay in a consistent environment while the platform applies standards and automation.

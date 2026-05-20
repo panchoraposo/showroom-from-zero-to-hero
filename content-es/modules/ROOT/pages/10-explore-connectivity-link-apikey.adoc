@@ -1,0 +1,216 @@
+= Autenticación por API Key (NFL Wallet)
+
+En este módulo explorarás cómo **Red Hat Connectivity Link** protege la aplicación **NFL Wallet** pre-desplegada usando **AuthPolicy con API Key** y **RateLimitPolicy**.
+
+== Architecture
+
+NFL Wallet is deployed in the `nfl-wallet-prod` namespace. It uses the same Quarkus backend but is protected by **API Key** instead of OIDC, making it ideal for **machine-to-machine (M2M)** access.
+
+[mermaid]
+....
+sequenceDiagram
+    participant Client
+    participant Gateway as Istio Gateway
+    participant Auth as Kuadrant AuthPolicy
+    participant RL as RateLimitPolicy
+    participant Backend as NFL Wallet Backend
+
+    Client->>Gateway: GET /api/v1/customers
+    Gateway->>Auth: Check X-API-Key header
+    alt No Key or Invalid Key
+        Auth-->>Client: 401 Unauthorized
+    else Valid Key
+        Auth->>RL: Check rate limit (120 req/min)
+        RL->>Backend: Forward request
+        Backend-->>Client: 200 JSON response
+    end
+....
+
+== OIDC vs API Key: cuándo usar cada uno
+
+[cols="1,1,1",options="header"]
+|===
+| | OIDC (Neuralbank) | API Key (NFL Wallet)
+
+| **Auth mechanism** | Keycloak JWT tokens | API Key in HTTP header
+| **Header** | `Authorization: Bearer <token>` | `X-API-Key: <key>`
+| **Unauthorized response** | 302 redirect to login | 401 JSON error
+| **Best for** | Interactive users (web apps) | M2M integrations, scripts, CI/CD
+| **Key management** | Keycloak issues tokens | Kubernetes Secrets with labels
+|===
+
+== Inspect the Resources
+
+[.console-input]
+[source,bash]
+----
+oc get pods -n nfl-wallet-prod
+oc get gateway -n nfl-wallet-prod
+oc get httproute -n nfl-wallet-prod
+oc get authpolicy -n nfl-wallet-prod -o wide
+oc get ratelimitpolicy -n nfl-wallet-prod -o wide
+----
+
+Verify the AuthPolicy shows `ACCEPTED: True` and `ENFORCED: True`.
+
+== AuthPolicy with API Key
+
+[source,yaml]
+----
+apiVersion: kuadrant.io/v1
+kind: AuthPolicy
+metadata:
+  name: nfl-wallet-auth
+  namespace: nfl-wallet-prod
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: nfl-wallet-route
+  defaults:
+    rules:
+      authentication:
+        api-key-auth:
+          apiKey:
+            allNamespaces: true
+            selector:
+              matchLabels:
+                app: nfl-wallet
+                kuadrant.io/apikey: "true"
+          credentials:
+            customHeader:
+              name: X-API-Key
+      response:
+        unauthenticated:
+          code: 401
+          body:
+            value: '{"error":"API Key required. Include X-API-Key header."}'
+----
+
+== List Available API Keys
+
+API Keys are stored as Kubernetes Secrets with labels that Kuadrant/Authorino detects:
+
+[.console-input]
+[source,bash]
+----
+oc get secrets -n nfl-wallet-prod -l kuadrant.io/apikey=true
+
+# Decode the admin key (can do POST/PUT/DELETE)
+oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
+  -o jsonpath='{.data.api_key}' | base64 -d ; echo
+
+# Decode the readonly key (GET only)
+oc get secret nfl-wallet-apikey-readonly -n nfl-wallet-prod \
+  -o jsonpath='{.data.api_key}' | base64 -d ; echo
+----
+
+== Test: Request Without API Key (expect 401)
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+curl -s -o /dev/null -w "HTTP Status: %\{http_code}\n" \
+  https://nfl-wallet.{cluster_domain}/api/v1/customers
+----
+
+[.console-output]
+----
+HTTP Status: 401
+----
+
+== Test: With Valid API Key (expect 200)
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+ADMIN_KEY=$(oc get secret nfl-wallet-apikey-admin -n nfl-wallet-prod \
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
+
+curl -s -H "X-API-Key: $ADMIN_KEY" \
+  "https://nfl-wallet.{cluster_domain}/api/v1/customers" \
+  | jq '.content[:1]'
+----
+
+== Test: Create a Customer (POST)
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+USER_NAME="{user_name}"
+N=${USER_NAME#user}
+printf -v LAST4 "%04d" "$N"
+SSN="999-88-$LAST4"
+EMAIL="apikey.${USER_NAME}@wallet.io"
+
+curl -s -X POST \
+  -H "X-API-Key: $ADMIN_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "identificacion": "'"$SSN"'",
+    "tipoIdentificacion": "SSN",
+    "nombre": "API Key",
+    "apellido": "Test",
+    "email": "'"$EMAIL"'",
+    "telefono": "+1-305-555-0102",
+    "direccion": "123 Ocean Dr",
+    "ciudad": "Miami",
+    "estadoProvincia": "FL",
+    "codigoPostal": "33139",
+    "paisId": 1,
+    "tipoCliente": "PERSONAL"
+  }' \
+  "https://nfl-wallet.{cluster_domain}/api/v1/customers" \
+  | jq .
+----
+
+== Quick Rate-Limit Test
+
+This API also has rate limiting enabled (via Kuadrant PlanPolicy). The **readonly** key is on the **free** plan (**10 requests per minute**) so you can trigger `429` quickly:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+READONLY_KEY=$(oc get secret nfl-wallet-apikey-readonly -n nfl-wallet-prod \
+  -o jsonpath='{.data.api_key}' | tr -d '\n' | base64 -d)
+
+for i in $(seq 1 12); do
+  code=$(curl -s -o /dev/null -w '%\{http_code}' \
+    -H "X-API-Key: $READONLY_KEY" \
+    "https://nfl-wallet.{cluster_domain}/api/v1/customers")
+  echo "Request $i: HTTP $code"
+done
+----
+
+The first 10 should return `200`. Requests 11+ should return `429 Too Many Requests`. If you don’t see `429`, wait 60 seconds and retry.
+
+== How API Key Auth Works
+
+[mermaid]
+....
+sequenceDiagram
+    participant Client
+    participant Authorino as Kuadrant Authorino
+    participant K8s as Kubernetes API
+    participant Backend
+
+    Note over Authorino,K8s: Authorino watches Secrets with label kuadrant.io/apikey=true
+    Client->>Authorino: Request with X-API-Key header
+    Authorino->>K8s: Lookup matching Secret
+    alt Key Found
+        Authorino->>Backend: Forward request
+        Backend-->>Client: 200 JSON
+    else Key Not Found
+        Authorino-->>Client: 401 Unauthorized
+    end
+....
+
+== Summary
+
+The API Key pattern is ideal for:
+
+* Machine-to-machine (M2M) integrations
+* CI/CD pipelines consuming APIs
+* External partners with long-lived credentials
+
+Both patterns (OIDC and API Key) are powered by the same stack: **Istio Gateway + HTTPRoute + Kuadrant policies**, demonstrating the flexibility of Red Hat Connectivity Link.

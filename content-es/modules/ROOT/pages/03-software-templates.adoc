@@ -1,0 +1,125 @@
+= Entendiendo los Software Templates
+
+Los **Software Templates** son uno de los pilares de Backstage y Red Hat Developer Hub. Permiten empaquetar opiniones, estándares y automatización en flujos que el/la desarrollador/a ejecuta mediante un formulario seguro.
+
+== ¿Qué son los Software Templates?
+
+Un Software Template es una definición declarativa que describe:
+
+* **Qué** se va a generar (código, manifiestos, pipelines, `catalog-info`, etc.).
+* **Qué parámetros** debe proporcionar el usuario (nombre del componente, owner).
+* **Qué pasos** ejecuta el motor de templates en secuencia (reemplazar placeholders, publicar a Git, registrar en el catálogo).
+
+== Estructura del template
+
+[source,yaml]
+----
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: neuralbank-backend
+  title: "Neuralbank: Backend API"
+  description: Quarkus REST API for customer management and credit scoring
+spec:
+  owner: platform-engineering
+  type: service
+  parameters:
+    - title: Component Information
+      properties:
+        name:
+          title: Name
+          type: string
+          default: neuralbank-backend
+        owner:
+          title: Owner (OpenShift username)
+          type: string
+  steps:
+    - id: fetch
+      name: Fetch Skeleton
+      action: fetch:template
+      input:
+        url: ./skeleton
+    - id: publish
+      name: Publish to Gitea
+      action: publish:gitea
+    - id: register
+      name: Register in Catalog
+      action: catalog:register
+----
+
+El directorio `skeleton/` contiene archivos del template con **placeholders** que el motor reemplaza con los valores de los parámetros.
+
+== Contenido del skeleton
+
+Un skeleton típico incluye:
+
+* **Código fuente** — proyecto Java/Quarkus con `pom.xml` y Dockerfile
+* **Manifiestos de OpenShift** — Deployment, Service, Route, Gateway, HTTPRoute
+* **Pipeline Tekton** — definición para PipelineRuns gatillados por webhooks
+* **`devfile.yaml`** — configuración de Dev Spaces
+* **`catalog-info.yaml`** — registro en el catálogo de Backstage
+* **Políticas de Kuadrant** — AuthPolicy y RateLimitPolicy para seguridad de APIs
+
+== Templates de Neuralbank
+
+[cols="1,2,2",options="header"]
+|===
+|Template |Propósito |Recursos principales generados
+
+|`neuralbank-backend`
+|API REST en Quarkus para créditos y dominio bancario
+|Deployment, Service, Pipeline, Gateway, HTTPRoute, AuthPolicy, RateLimitPolicy, API entity
+
+|`neuralbank-frontend`
+|SPA web conectada al backend vía reverse proxy
+|Deployment, Service, Route, Pipeline, `proxy.conf` for HTTPD
+
+|`customer-service-mcp`
+|Servidor MCP para operaciones de clientes invocables por IA
+|Deployment, Service, Pipeline, Gateway, HTTPRoute, AuthPolicy, RateLimitPolicy
+|===
+
+== Configuración del reverse proxy del frontend
+
+El template del frontend incluye un reverse proxy en Apache HTTPD que enruta las llamadas a la API a través del gateway gestionado por Kuadrant:
+
+[source,apacheconf]
+----
+ProxyPreserveHost Off
+
+ProxyPass "/api/backend/" "http://neuralbank-backend-gateway-istio:8080/api/"
+ProxyPassReverse "/api/backend/" "http://neuralbank-backend-gateway-istio:8080/api/"
+
+ProxyPass "/api/mcp/" "http://customer-service-mcp-gateway-istio:8080/"
+ProxyPassReverse "/api/mcp/" "http://customer-service-mcp-gateway-istio:8080/"
+----
+
+Esto asegura que todo el tráfico a la API pase por los gateways gestionados por Kuadrant, aplicando autenticación y rate limiting.
+
+== `catalog-info.yaml`
+
+Cada template genera un `catalog-info.yaml` que registra el componente en Developer Hub:
+
+[source,yaml]
+----
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: ${{values.uniqueName}}
+  annotations:
+    backstage.io/kubernetes-id: ${{values.uniqueName}}
+    argocd/app-name: ${{values.uniqueName}}
+    backstage.io/techdocs-ref: dir:.
+spec:
+  type: service
+  lifecycle: production
+  owner: user:default/${{values.owner}}
+  providesApis:
+    - ${{values.uniqueName}}-api
+----
+
+== Buenas prácticas
+
+* Revisa los **valores por defecto** y la descripción de cada parámetro antes de crear el componente.
+* Luego de crearlo, abre el **repositorio en Gitea** y confirma que la estructura sea la esperada.
+* Encuentra la entidad **Component** (y **API** si aplica) en el catálogo para enlazar documentación y pipelines.

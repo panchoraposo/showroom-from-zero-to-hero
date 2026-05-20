@@ -1,0 +1,319 @@
+= 10. OpenShift Lightspeed y MCP Gateway
+
+**OpenShift Lightspeed (OLS)** es un asistente de IA integrado en la consola web de OpenShift. Combinado con el **MCP Gateway** (extensión comunitaria de Kuadrant), puede ejecutar operaciones del cluster mediante herramientas invocables por IA.
+
+++++
+<div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);border-radius:12px;padding:20px 24px;margin:16px 0;color:#fff;cursor:pointer;display:flex;align-items:center;gap:16px;" onclick="openViz3D()">
+  <div style="font-size:2rem;">🔮</div>
+  <div>
+    <strong style="font-size:1.1rem;">Interactive 3D Architecture</strong><br>
+    <span style="opacity:0.8;font-size:0.9rem;">Click to explore the MCP Gateway graph with 5 servers and 55 tools — drag to rotate</span>
+  </div>
+</div>
+++++
+
+== Acceder a OpenShift Lightspeed
+
+. Log in to the **OpenShift Console** at `\https://console-openshift-console.{cluster_domain}`
+. Click the **Lightspeed** icon in the console header (chat bubble icon).
+. Haz preguntas sobre tu cluster, workloads o conceptos de Kubernetes.
+
+== Walkthrough de prompts del workshop (usando tools MCP)
+
+Ejecuta los siguientes prompts en el chat de Lightspeed. Cuando Lightspeed pida ejecutar una herramienta/acción, apruébala.
+
+. Listar pods del stack pre-desplegado:
+* `List all pods in the neuralbank-stack namespace`
+. Listar Applications de Argo CD:
+* `List all ArgoCD applications`
+. Escalar el frontend en tu namespace generado:
+* `Scale the frontend deployment to 2 replicas in the {user_name}-neuralbank namespace`
+. Desplegar Redis en tu namespace generado (elige uno):
+* `Deploy a Redis database in the {user_name}-neuralbank namespace`
+* `Install Redis using Helm in the {user_name}-neuralbank namespace`
+
+== Arquitectura: OLS + MCP Gateway
+
+[mermaid]
+....
+graph TB
+    USER[Platform Engineer] -->|Chat| OLS[OpenShift Lightspeed]
+    OLS -->|LLM Inference| LLM[LLM Model Server]
+    OLS -->|Streamable HTTP| MCPGW[MCP Gateway]
+
+    subgraph MCP_Servers[MCP Servers - 55 Tools]
+        K8S[k8s-mcp-server - 22 tools]
+        OCPS[ocp-mcp-server - 19 tools]
+        ARGO[argocd-mcp-server - 14 tools]
+    end
+
+    OLS -->|Direct SSE| RHDH[rhdh-mcp-server - 7 tools]
+
+    MCPGW --> K8S
+    MCPGW --> OCPS
+    MCPGW --> ARGO
+    K8S -->|kubectl| CLUSTER[OpenShift API]
+    OCPS -->|oc| CLUSTER
+    ARGO -->|REST API| ARGOCD[ArgoCD Server]
+    RHDH --> DEVHUB[Developer Hub]
+....
+
+== Instalación (GitOps del workshop)
+
+El workshop instala la **configuración del MCP Gateway** vía GitOps (Gateway API `Gateway` + `MCPGatewayExtension` + registros/rutas de servidores).
+
+Si despliegas en un **cluster limpio** y quieres que GitOps también instale el **MCP Gateway Operator** (OLM / OperatorHub), habilita:
+
+[source,yaml]
+----
+connectivityLink:
+  mcpGateway:
+    operatorInstallEnabled: true
+----
+
+Si tu cluster ya tiene **Kuadrant/Authorino** corriendo y gestionando recursos `AuthConfig`, mantenlo deshabilitado para evitar conflictos de dependencias OLM.
+
+== MCP Tools Reference — 55 Tools
+
+The MCP Gateway federates **55 tools** from 4 backend MCP servers, plus 7 from Developer Hub accessed directly. Each tool is callable by the LLM through natural language prompts.
+
+=== Kubernetes Tools (prefix `k8s` — 22 tools)
+
+[cols="2,3",options="header"]
+|===
+| Tool Name | Description
+
+| `k8spods_list` | List all pods across the cluster
+| `k8spods_list_in_namespace` | List pods in a specific namespace
+| `k8spods_get` | Get details of a specific pod
+| `k8spods_log` | Get logs from a pod
+| `k8spods_top` | Show resource usage for pods
+| `k8spods_run` | Run a pod with a given image
+| `k8spods_exec` | Execute a command inside a pod
+| `k8spods_delete` | Delete a pod
+| `k8sresources_list` | List resources by kind in a namespace
+| `k8sresources_get` | Get a specific resource by name
+| `k8sresources_create_or_update` | Create or update a resource from YAML
+| `k8sresources_delete` | Delete a specific resource
+| `k8sresources_scale` | Scale a deployment/statefulset
+| `k8snamespaces_list` | List all namespaces
+| `k8sprojects_list` | List all OpenShift projects
+| `k8snodes_top` | Show resource usage for nodes
+| `k8snodes_log` | Get logs from a node
+| `k8snodes_stats_summary` | Get stats summary from a node
+| `k8sevents_list` | List events in a namespace
+| `k8shelm_install` | Install a Helm chart
+| `k8shelm_list` | List Helm releases
+| `k8shelm_uninstall` | Uninstall a Helm release
+|===
+
+==== Example Prompts
+
+* _"List all pods in the neuralbank-stack namespace"_ → `k8spods_list_in_namespace`
+* _"Show me the logs of the neuralbank-backend pod"_ → `k8spods_log`
+* _"What events happened in user1-neuralbank?"_ → `k8sevents_list`
+* _"Scale the frontend deployment to 3 replicas"_ → `k8sresources_scale`
+* _"Install Redis using Helm in my namespace"_ → `k8shelm_install`
+* _"Show me node resource usage"_ → `k8snodes_top`
+
+=== OpenShift Tools (prefix `ocp` — 19 tools)
+
+[cols="2,3",options="header"]
+|===
+| Tool Name | Description
+
+| `ocpcreateDeployment` | Create a new Deployment
+| `ocpdeployDatabase` | Deploy a database (Redis, PostgreSQL, etc.)
+| `ocpcreateService` | Create a Kubernetes Service
+| `ocpcreateHpa` | Create a Horizontal Pod Autoscaler
+| `ocpcreateNetworkPolicy` | Create a NetworkPolicy
+| `ocpmonitorDeployments` | Monitor all deployments in a namespace
+| `ocpdetectResourceIssues` | Detect resource issues (OOMKill, pending pods)
+| `ocpcheckClusterHealth` | Check overall cluster health
+| `ocpcheckNodeConditions` | Check node conditions (Ready, Pressure)
+| `ocpcheckKubeletStatus` | Check kubelet status on nodes
+| `ocpcheckCrioStatus` | Check CRI-O container runtime status
+| `ocpgetPerformanceMetrics` | Get cluster performance metrics
+| `ocpanalyzeJournalctlPodErrors` | Analyze journalctl for pod errors
+| `ocpanalyzePodDisruptions` | Analyze pod disruption budgets
+| `ocprunCpuStressTest` | Run a CPU stress test
+| `ocprunNetworkTest` | Run a network connectivity test
+| `ocprunStorageBenchmark` | Run a storage I/O benchmark
+| `ocprunDatabaseBenchmark` | Run a database benchmark
+| `ocprunKubeBurner` | Run kube-burner load test
+|===
+
+==== Example Prompts
+
+* _"Deploy a Redis database in the `{user_name}-neuralbank` namespace"_ → `ocpdeployDatabase`
+* _"Check the cluster health"_ → `ocpcheckClusterHealth`
+* _"Are there any pods with resource issues?"_ → `ocpdetectResourceIssues`
+* _"Create a HorizontalPodAutoscaler for my backend"_ → `ocpcreateHpa`
+* _"Run a network test between my services"_ → `ocprunNetworkTest`
+* _"Monitor all deployments in neuralbank-stack"_ → `ocpmonitorDeployments`
+
+=== ArgoCD Tools (prefix `argo` — 14 tools)
+
+[cols="2,3",options="header"]
+|===
+| Tool Name | Description
+
+| `argolist_applications` | List all ArgoCD applications (supports search, pagination)
+| `argolist_clusters` | List clusters registered with ArgoCD
+| `argoget_application` | Get full details of an application
+| `argoget_application_resource_tree` | Get the resource tree (all child resources)
+| `argoget_application_managed_resources` | Get managed resources with filters (kind, namespace)
+| `argoget_application_workload_logs` | Get logs from workloads managed by an app
+| `argoget_application_events` | Get application-level events
+| `argoget_resource_events` | Get events for a specific managed resource
+| `argoget_resources` | Get YAML manifests of managed resources
+| `argoget_resource_actions` | List available actions on a resource (restart, etc.)
+| `argocreate_application` | Create a new ArgoCD application
+| `argoupdate_application` | Update an existing application
+| `argodelete_application` | Delete an ArgoCD application
+| `argosync_application` | Trigger a sync (supports dry-run, prune, revision)
+| `argorun_resource_action` | Execute an action on a managed resource
+|===
+
+==== Example Prompts
+
+* _"List all ArgoCD applications"_ → `argolist_applications`
+* _"Which applications are out of sync?"_ → `argolist_applications` + filter
+* _"Sync the developer-hub application"_ → `argosync_application`
+* _"Show me the resource tree for the showroom app"_ → `argoget_application_resource_tree`
+* _"Why is the mcp-gateway app failing?"_ → `argoget_resource_events` + `argoget_application_workload_logs`
+* _"Restart the workshop-registration deployment"_ → `argorun_resource_action`
+* _"Show me the managed resources of type Deployment in ols"_ → `argoget_application_managed_resources`
+* _"Get the events for the mcp-gateway application"_ → `argoget_application_events`
+
+=== Developer Hub / Backstage Tools (no prefix — 7 tools, direct SSE)
+
+These tools connect OLS directly to Red Hat Developer Hub (not through the Kuadrant Gateway):
+
+[cols="2,3",options="header"]
+|===
+| Tool Name | Description
+
+| `fetch-template-metadata` | List and search Software Templates in the catalog
+| `fetch-catalog-entities` | List/search catalog entities (Components, APIs, Systems)
+| `register-catalog-entities` | Register new entities from a URL
+| `unregister-catalog-entities` | Remove registered entities
+| `fetch-techdocs` | List entities with TechDocs documentation
+| `analyze-techdocs-coverage` | Get documentation coverage statistics
+| `retrieve-techdocs-content` | Retrieve TechDocs content for a specific entity
+|===
+
+==== Example Prompts
+
+* _"List all Software Templates available in Developer Hub"_ → `fetch-template-metadata`
+* _"Show me all registered components"_ → `fetch-catalog-entities`
+* _"What entities have TechDocs?"_ → `fetch-techdocs`
+* _"Register a new entity from https://gitea.example.com/catalog-info.yaml"_ → `register-catalog-entities`
+
+== What is MCP (Model Context Protocol)?
+
+MCP is an open standard that allows AI models to interact with external tools securely:
+
+* **Tools** — Functions the AI can call (e.g., list pods, sync ArgoCD apps)
+* **Resources** — Data the AI can read (e.g., cluster state, catalog entities)
+* **Prompts** — Pre-built conversation templates
+* **Transports** — Streamable HTTP (Kuadrant Gateway) or SSE (Developer Hub direct)
+
+The MCP Gateway acts as a federation layer, aggregating multiple MCP servers behind a single endpoint with unified authentication via Kuadrant.
+
+== OLS Configuration
+
+OpenShift Lightspeed connects to MCP servers through its `OLSConfig` custom resource:
+
+[source,yaml,subs="attributes+"]
+----
+apiVersion: ols.openshift.io/v1alpha1
+kind: OLSConfig
+metadata:
+  name: cluster
+spec:
+  featureGates:
+    - MCPServer
+  mcpServers:
+    - name: mcp-gateway
+      url: "http://mcp-gateway-istio.mcp-system.svc:8080/mcp"
+      timeout: 120
+    - name: rhdh-catalog
+      url: "http://backstage-developer-hub.developer-hub.svc.cluster.local/api/mcp-actions/v1"
+      timeout: 120
+      headers:
+        - name: Authorization
+          valueFrom:
+            type: secret
+            secretRef:
+              name: rhdh-mcp-token
+----
+
+== MCP Gateway Registration
+
+Each backend MCP server is registered with the Kuadrant MCP Gateway:
+
+[source,yaml]
+----
+apiVersion: mcp.kuadrant.io/v1alpha1
+kind: MCPServerRegistration
+metadata:
+  name: argocd-mcp-server
+  namespace: mcp-system
+spec:
+  targetRef:
+    name: argocd-mcp-server-route
+  toolPrefix: argo
+  path: /mcp
+----
+
+The `toolPrefix` ensures tool names don't collide across servers (e.g., `argolist_applications` vs `k8spods_list`).
+
+== ArgoCD MCP Server
+
+The ArgoCD MCP server (`argoproj-labs/mcp-for-argocd`) runs on the Red Hat certified `ubi9/nodejs-22` image and uses Streamable HTTP transport:
+
+[source,yaml]
+----
+image: registry.redhat.io/ubi9/nodejs-22:latest
+command: ["npx"]
+args: ["argocd-mcp@latest", "http"]
+env:
+  - name: ARGOCD_BASE_URL
+    value: "https://openshift-gitops-server.openshift-gitops.svc.cluster.local"
+  - name: ARGOCD_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: argocd-mcp-token
+        key: ARGOCD_API_TOKEN
+----
+
+== Customer Service MCP
+
+The workshop also deploys a **Customer Service MCP** as part of the Neuralbank stack. This MCP server exposes backend operations (customer CRUD, credit scoring) as AI-callable tools:
+
+[.console-input]
+[source,bash,subs="attributes+"]
+----
+# Check MCP server tools endpoint
+curl -s -H "X-API-Key: $API_KEY" \
+  "https://{user_name}-customer-service-mcp.{cluster_domain}/tools" \
+  | jq .
+----
+
+== Summary
+
+OpenShift Lightspeed with the MCP Gateway provides **55 federated tools** across 5 MCP servers:
+
+[cols="1,1,1",options="header"]
+|===
+| Server | Prefix | Tools
+
+| k8s-mcp-server | `k8s` | 22
+| ocp-mcp-server | `ocp` | 19
+| argocd-mcp-server | `argo` | 14
+| rhdh-mcp-server | _(none)_ | 7
+| customer-svc-mcp | _(app)_ | varies
+|===
+
+This transforms the OpenShift console into an AI-powered operations center where platform engineers can manage Kubernetes resources, ArgoCD applications, Developer Hub catalog, and business services — all through natural language.

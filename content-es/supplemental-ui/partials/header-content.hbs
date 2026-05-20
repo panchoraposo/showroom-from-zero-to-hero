@@ -13,9 +13,6 @@
           <a id="link-devspaces" href="#" target="_blank" style="color:#73bcf7;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="Open DevSpaces"><i class="fa fa-cloud" style="margin-right:3px;"></i>DevSpaces</a>
           <a id="link-console" href="#" target="_blank" style="color:#73bcf7;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="Open OpenShift Console"><i class="fa fa-cube" style="margin-right:3px;"></i>Console</a>
           <span style="border-left:1px solid #555;height:20px;margin:0 4px;"></span>
-          <a id="link-lang-en" href="#" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="English">EN</a>
-          <a id="link-lang-es" href="#" style="color:#fff;font-size:0.8rem;text-decoration:none;padding:3px 8px;border:1px solid #444;border-radius:4px;" title="Español">ES</a>
-          <span style="border-left:1px solid #555;height:20px;margin:0 4px;"></span>
           <span id="user-badge" style="display:none;background:#292929;color:#fff;padding:4px 12px;border-radius:16px;font-size:0.85rem;border:1px solid #444;">
             <i class="fa fa-user" style="margin-right:4px;"></i>
             <span id="user-badge-name"></span>
@@ -55,8 +52,6 @@
     var ui = document.getElementById('user-name-input');
     var save = document.getElementById('vars-save');
     var cancelEdit = document.getElementById('vars-cancel-edit');
-    var langEn = document.getElementById('link-lang-en');
-    var langEs = document.getElementById('link-lang-es');
 
     var params = getSearchParams();
     var qpDomain = params.get('CLUSTER_DOMAIN');
@@ -111,44 +106,6 @@
       if (ld) ld.href = 'https://devspaces.' + domain;
       if (lc) lc.href = 'https://console-openshift-console.' + domain;
     }
-
-    // Language switcher: keep same page path when possible.
-    function setLangLinks() {
-      if (!langEn || !langEs) return;
-      var href = window.location.href;
-      try {
-        var u = new URL(href);
-        var p = u.pathname || '/';
-        var qs = u.search || '';
-        var h = u.hash || '';
-
-        function swap(fromSeg, toSeg) {
-          if (p.indexOf(fromSeg) === 0) return toSeg + p.slice(fromSeg.length) + qs + h;
-          return null;
-        }
-
-        var toEs = swap('/modules/', '/modules-es/') || swap('/', '/modules-es/');
-        var toEn = swap('/modules-es/', '/modules/') || swap('/', '/modules/');
-
-        // If the current URL doesn't include component segments, fall back to component roots.
-        if (!toEs) toEs = '/modules-es/' + qs + h;
-        if (!toEn) toEn = '/modules/' + qs + h;
-
-        langEs.href = toEs;
-        langEn.href = toEn;
-
-        var onEs = (p.indexOf('/modules-es/') === 0);
-        langEs.style.opacity = onEs ? '1.0' : '0.75';
-        langEn.style.opacity = onEs ? '0.75' : '1.0';
-        langEs.style.borderColor = onEs ? '#73bcf7' : '#444';
-        langEn.style.borderColor = onEs ? '#444' : '#73bcf7';
-      } catch (e) {
-        langEs.href = '/modules-es/';
-        langEn.href = '/modules/';
-      }
-    }
-
-    setLangLinks();
 
   }
 

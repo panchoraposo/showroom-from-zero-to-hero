@@ -1,0 +1,15 @@
+---
+type: showroom
+
+default_width: 30
+persist_url_state: true
+
+view_switcher:
+  enabled: true
+  default_mode: content
+
+tabs:
+  - name: Developer Hub
+    url: 'https://backstage-developer-hub-developer-hub.${DOMAIN}'
+  - name: Terminal
+    url: '/terminal/'
