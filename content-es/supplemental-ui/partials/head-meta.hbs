@@ -298,12 +298,11 @@ document.addEventListener('DOMContentLoaded', function() {
     overlay.innerHTML = '<button class="viz3d-close" onclick="closeViz3D()">✕ Close</button><div id="viz3d-canvas" style="width:100%;height:100%"></div><div id="viz3d-title" class="viz3d-title"></div>';
     document.body.appendChild(overlay);
 
-    var logoSrc = document.querySelector('link[rel=icon]')?.href?.replace('/img/favicon.ico','/img/Logo-OSC_with_padding.png') || '';
+    var logoSrc = 'https://mktdevzone.com/redhat/2026/SAC/SOLA_WEST/2604-TechDay-Chile/AGENDA/mailing/imagenes/img-01.jpg';
     var btn = document.createElement('div');
     btn.className = 'viz3d-btn';
-    btn.title = 'Red Hat Tech Day - Santiago 2026\nClick logo to view 3D architecture';
-    btn.innerHTML = '<img src="'+logoSrc+'" alt="OpenShift Commons" style="cursor:pointer" onclick="openViz3D()">'+
-      '<a href="https://www.redhat.com/" target="_blank" rel="noopener" style="color:#333;text-decoration:none;font-weight:500;line-height:1.2;">Red Hat Tech Day<br>Santiago 2026</a>';
+    btn.title = 'Click to view 3D architecture';
+    btn.innerHTML = '<img src="'+logoSrc+'" alt="Red Hat Tech Day Chile" style="cursor:pointer;max-width:240px;height:auto;" onclick="openViz3D()">';
     document.body.appendChild(btn);
   });
 })();
