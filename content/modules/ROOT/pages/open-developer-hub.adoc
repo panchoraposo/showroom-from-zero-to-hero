@@ -1,0 +1,21 @@
+= Open Developer Hub (login)
+
+This tab opens **Developer Hub** inside the workshop UI.
+
+Some browsers block login sessions when Developer Hub is embedded in a tab/iframe. If you see an OIDC error during login, open Developer Hub in a new browser tab.
+
+++++
+<div style="display:flex;gap:12px;flex-wrap:wrap;margin:16px 0;">
+  <a href="https://backstage-developer-hub-developer-hub.{cluster_domain}" target="_blank" rel="noopener"
+     style="background:#0066cc;color:#fff;text-decoration:none;padding:10px 14px;border-radius:10px;font-weight:600;">
+    Open Developer Hub in a new tab
+  </a>
+  <a href="https://backstage-developer-hub-developer-hub.{cluster_domain}" target="_self"
+     style="background:#fff;color:#151515;text-decoration:none;padding:10px 14px;border-radius:10px;border:1px solid #d2d2d2;font-weight:600;">
+    Try opening here (may fail)
+  </a>
+</div>
+++++
+
+TIP: If you were given a URL like `.../modules/?USER_NAME=user1&CLUSTER_DOMAIN=...`, keep those parameters when you switch languages. They allow the workshop to render your username and cluster domain.
+
