@@ -44,6 +44,18 @@ TIP: These tools are also accessible from the **Console Links** in the OpenShift
 . Navigate to the **Graph** view.
 . Select namespace `{user_name}-neuralbank` or `neuralbank-stack`.
 . Observe the traffic flow between services.
++
+TIP: If the graph is empty, it usually means there is **no traffic in the selected time window** (or nodes haven’t seen requests yet). Try:
++
+* Set the time range to **Last 1h**
+* Click **Display idle nodes**
+* Generate a bit of traffic (refresh the frontend Credits page, or run a quick curl loop):
++
+[.console-input]
+[source,bash]
+----
+for i in $(seq 1 30); do curl -sS http://neuralbank-backend:8080/api/hello >/dev/null || true; sleep 0.2; done
+----
 
 Kiali shows:
 

@@ -44,6 +44,18 @@ TIP: Estas herramientas también están disponibles desde los **Console Links** 
 . Navega a la vista **Graph**.
 . Selecciona el namespace `{user_name}-neuralbank` o `neuralbank-stack`.
 . Observa el flujo de tráfico entre servicios.
++
+TIP: Si el grafo aparece vacío, normalmente significa que **no hay tráfico en la ventana de tiempo seleccionada** (o que aún no han pasado requests por esos nodos). Prueba:
++
+* Cambiar el rango de tiempo a **Last 1h**
+* Hacer clic en **Display idle nodes**
+* Generar un poco de tráfico (refresca la página de Credits en el frontend o ejecuta este loop):
++
+[.console-input]
+[source,bash]
+----
+for i in $(seq 1 30); do curl -sS http://neuralbank-backend:8080/api/hello >/dev/null || true; sleep 0.2; done
+----
 
 Kiali muestra:
 
@@ -117,4 +129,4 @@ El stack de observabilidad provee visibilidad end-to-end a través de la platafo
 * **Jaeger** para trazas distribuidas
 * **Indicadores del frontend** para estado del gateway en tiempo real
 
-Combined with Kuadrant policies and ArgoCD GitOps, this creates a fully observable platform.
+Combinado con políticas de Kuadrant y GitOps con ArgoCD, esto crea una plataforma completamente observable.
