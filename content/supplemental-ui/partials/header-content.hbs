@@ -16,6 +16,29 @@
 </header>
 <script>
 (function() {
+  function normalizeLangRoot(pathname) {
+    if (!pathname) return pathname;
+    // Some URL state persistence paths may accidentally include quotes around the component root,
+    // e.g. /'modules'/ or /%27modules%27/. Normalize to avoid 404 on refresh.
+    var p = pathname;
+    // Decode once to handle %27 and similar.
+    try { p = decodeURIComponent(p); } catch (e) {}
+
+    var rules = [
+      { from: "/'modules-es'/", to: "/modules-es/" },
+      { from: '/"modules-es"/', to: "/modules-es/" },
+      { from: "/'modules'/", to: "/modules/" },
+      { from: '/"modules"/', to: "/modules/" },
+    ];
+    for (var i = 0; i < rules.length; i++) {
+      if (p.indexOf(rules[i].from) === 0) {
+        p = rules[i].to + p.slice(rules[i].from.length);
+        break;
+      }
+    }
+    return p;
+  }
+
   function init() {
     var langEn = document.getElementById('link-lang-en');
     var langEs = document.getElementById('link-lang-es');
@@ -23,6 +46,12 @@
 
     var qs = window.location.search || '';
     var h = window.location.hash || '';
+
+    var normalized = normalizeLangRoot(window.location.pathname || '/');
+    if (normalized && normalized !== (window.location.pathname || '/')) {
+      window.location.replace(normalized + qs + h);
+      return;
+    }
 
     // Always switch to the component root to avoid 404s.
     langEn.href = '/modules/' + qs + h;
