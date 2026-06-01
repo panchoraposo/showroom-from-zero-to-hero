@@ -54,7 +54,8 @@ TIP: If the graph is empty, it usually means there is **no traffic in the select
 [.console-input]
 [source,bash]
 ----
-for i in $(seq 1 30); do curl -sS http://neuralbank-backend:8080/api/hello >/dev/null || true; sleep 0.2; done
+NS="{user_name}-neuralbank"
+for i in $(seq 1 30); do curl -sS "http://neuralbank-backend.${NS}.svc.cluster.local:8080/api/hello" >/dev/null || true; sleep 0.2; done
 ----
 
 Kiali shows:
