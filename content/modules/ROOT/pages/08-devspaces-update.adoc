@@ -51,7 +51,7 @@ In this section you will use Dev Spaces to inspect the devfile, scan dependencie
 . Read it and identify the key pieces:
 * Workspace container resources (CPU/memory) under `components[].container`.
 * The available commands (these show up as tasks) and what they do:
-** `01-build` runs `mvn package -DskipTests`
+** `01-build` runs `mvn compile -DskipTests`
 ** `02-run` runs `mvn quarkus:dev` for live reload
 . Also open `.mvn/maven.config` and `.mvn/settings.xml` to see how Maven is configured to use the in-cluster Nexus.
 
@@ -180,8 +180,13 @@ The workshop also includes a **Customer Service MCP** component. You can edit an
 [source,bash]
 ----
 curl -s "http://localhost:8080/q/health" | jq .
-curl -i "http://localhost:8080/mcp"
-curl -i "http://localhost:8080/mcp/sse"
+# Note: `/mcp` is a JSON-RPC endpoint (POST). A GET returns 405 (expected).
+curl -i -X POST "http://localhost:8080/mcp" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+
+# SSE endpoint (streams events)
+curl -i -N "http://localhost:8080/mcp/sse"
 ----
 +
 . Optional: interactively call MCP tools with the MCP Inspector (requires Node.js in the workspace):
@@ -189,8 +194,12 @@ curl -i "http://localhost:8080/mcp/sse"
 [.console-input]
 [source,bash]
 ----
-npx @anthropic-ai/mcp-inspector http://localhost:8080/mcp/sse
+npx -y @modelcontextprotocol/inspector --cli http://localhost:8080/mcp/sse
 ----
+
+. Recommended: use Quarkus Dev UI to call tools:
+* In Dev UI, open *MCP Server - HTTP/SSE - Tools*
+* Select a tool (for example `getCustomer`) and click *Call* to see the response
 
 == Summary
 
