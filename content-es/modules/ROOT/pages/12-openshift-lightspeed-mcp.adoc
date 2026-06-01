@@ -44,7 +44,7 @@ Ejecuta los siguientes prompts en el chat de Lightspeed. Cuando Lightspeed pida 
 . Integración con Developer Hub (tools directas, sin prefijo del gateway):
 * `List all Software Templates available in Developer Hub`
 * `Show me all registered components`
-* `Register a new entity from https://gitea-gitea.{cluster_domain}/ws-{user_name}/ols-import-demo/raw/branch/main/catalog-info.yaml`
+* `Register a new entity from https://gitea-gitea.{cluster_domain}/ws-{user_name}/ols-import-demo/raw/branch/main/template.yaml`
 
 == Arquitectura: OLS + MCP Gateway
 
