@@ -180,23 +180,10 @@ The workshop also includes a **Customer Service MCP** component. You can edit an
 [source,bash]
 ----
 curl -s "http://localhost:8080/q/health" | jq .
-# Note: `/mcp` is a JSON-RPC endpoint (POST). A GET returns 405 (expected).
-curl -i -X POST "http://localhost:8080/mcp" \
-  -H "Content-Type: application/json" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
-
 # SSE endpoint (streams events)
 curl -i -N "http://localhost:8080/mcp/sse"
 ----
 +
-. Optional: interactively call MCP tools with the MCP Inspector (requires Node.js in the workspace):
-+
-[.console-input]
-[source,bash]
-----
-npx -y @modelcontextprotocol/inspector --cli http://localhost:8080/mcp/sse
-----
-
 . Recommended: use Quarkus Dev UI to call tools:
 * In Dev UI, open *MCP Server - HTTP/SSE - Tools*
 * Select a tool (for example `getCustomer`) and click *Call* to see the response
